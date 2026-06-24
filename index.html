@@ -1,25 +1,3 @@
--- ‚ïê‚ïê‚ïê‚ïê PROGRESO: tabla + seguridad + ventana p√∫blica ‚ïê‚ïê‚ïê‚ïê
-create table if not exists public.progreso (
-  cid bigint primary key,
-  dom text, deb text, met text, est text,
-  flo int default 0, resp int default 0, pat int default 0, conf int default 0, rsi int default 0
-);
-alter table public.progreso enable row level security;
-drop policy if exists "admin_progreso" on public.progreso;
-create policy "admin_progreso" on public.progreso for all to authenticated using (true) with check (true);
--- ventana p√∫blica (lo que ven los pap√°s: habilidades + lo que domina + meta, en positivo)
-create or replace view public.progreso_publico as
-  select cid, dom, met, est, flo, resp, pat, conf, rsi from public.progreso;
-grant select on public.progreso_publico to anon;
-
--- ‚ïê‚ïê‚ïê‚ïê Subir tu progreso actual ‚ïê‚ïê‚ïê‚ïê
-insert into public.progreso (cid,dom,deb,met,est,flo,resp,pat,conf,rsi) values (1,'Control de cara','Flotaci√≥n','Flotaci√≥n asistida','En progreso',30,40,20,65,20) on conflict (cid) do update set dom=excluded.dom,deb=excluded.deb,met=excluded.met,est=excluded.est,flo=excluded.flo,resp=excluded.resp,pat=excluded.pat,conf=excluded.conf,rsi=excluded.rsi;
-insert into public.progreso (cid,dom,deb,met,est,flo,resp,pat,conf,rsi) values (2,'Adaptaci√≥n inicial','Todo','Meter cara sin miedo','En progreso',15,10,10,25,10) on conflict (cid) do update set dom=excluded.dom,deb=excluded.deb,met=excluded.met,est=excluded.est,flo=excluded.flo,resp=excluded.resp,pat=excluded.pat,conf=excluded.conf,rsi=excluded.rsi;
-insert into public.progreso (cid,dom,deb,met,est,flo,resp,pat,conf,rsi) values (3,'Sumersi√≥n y cara','Respiraci√≥n','Respiraci√≥n controlada','En progreso',50,35,40,80,30) on conflict (cid) do update set dom=excluded.dom,deb=excluded.deb,met=excluded.met,est=excluded.est,flo=excluded.flo,resp=excluded.resp,pat=excluded.pat,conf=excluded.conf,rsi=excluded.rsi;
-insert into public.progreso (cid,dom,deb,met,est,flo,resp,pat,conf,rsi) values (4,'Nado libre','Espalda','Dominar espalda completo','En progreso',90,85,88,95,80) on conflict (cid) do update set dom=excluded.dom,deb=excluded.deb,met=excluded.met,est=excluded.est,flo=excluded.flo,resp=excluded.resp,pat=excluded.pat,conf=excluded.conf,rsi=excluded.rsi;
-insert into public.progreso (cid,dom,deb,met,est,flo,resp,pat,conf,rsi) values (5,'Control respiraci√≥n','Coordinaci√≥n','Nivel 2 completo','En progreso',55,60,45,70,40) on conflict (cid) do update set dom=excluded.dom,deb=excluded.deb,met=excluded.met,est=excluded.est,flo=excluded.flo,resp=excluded.resp,pat=excluded.pat,conf=excluded.conf,rsi=excluded.rsi;
-insert into public.progreso (cid,dom,deb,met,est,flo,resp,pat,conf,rsi) values (7,'mete cara','tension en el agua','flotaci√≥n','En progreso',50,50,50,50,50) on conflict (cid) do update set dom=excluded.dom,deb=excluded.deb,met=excluded.met,est=excluded.est,flo=excluded.flo,resp=excluded.resp,pat=excluded.pat,conf=excluded.conf,rsi=excluded.rsi;
-insert into public.progreso (cid,dom,deb,met,est,flo,resp,pat,conf,rsi) values (6,'','miedo','meter cara','En progreso',10,10,50,10,10) on conflict (cid) do update set dom=excluded.dom,deb=excluded.deb,met=excluded.met,est=excluded.est,flo=excluded.flo,resp=excluded.resp,pat=excluded.pat,conf=excluded.conf,rsi=excluded.rsi;
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -90,6 +68,17 @@ body{font-family:'Inter',system-ui,-apple-system,sans-serif;background:var(--bg)
 .pend{margin-top:10px;font-size:13px;color:var(--text2)}
 .pend b{color:var(--accent)}
 .porconf{font-size:15px;color:var(--amber);background:var(--amber-bg);padding:12px 15px;border-radius:12px;font-weight:500}
+.skills{padding:4px 22px 16px}
+.skill{margin-bottom:14px}
+.sl{display:flex;justify-content:space-between;font-size:14px;margin-bottom:6px;color:var(--text)}
+.sl .v{font-weight:600}
+.sbar{height:10px;background:var(--bg3);border-radius:6px;overflow:hidden}
+.sfill{height:100%;border-radius:6px;transition:width .7s cubic-bezier(.16,1,.3,1)}
+.pills{display:flex;gap:8px;flex-wrap:wrap;margin-top:18px}
+.pill{font-size:13px;padding:9px 13px;border-radius:10px}
+.pill b{display:block;font-size:11px;opacity:.75;font-weight:600;text-transform:uppercase;letter-spacing:.04em;margin-bottom:2px}
+.pdom{background:var(--green-bg);color:var(--green)}
+.pmeta{background:var(--accent-soft);color:var(--purp)}
 
 .sec-t{font-size:12px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;padding:0 22px;margin:8px 0 8px}
 .clist{padding:0 22px 8px}
@@ -168,7 +157,7 @@ async function buscar(){
     let html='';
     for(const k of kids){ html+=await tarjeta(k); }
     out.innerHTML=html;
-    requestAnimationFrame(()=>document.querySelectorAll('.bar-fill').forEach(b=>b.style.width=b.dataset.w+'%'));
+    requestAnimationFrame(()=>document.querySelectorAll('.bar-fill,.sfill').forEach(b=>b.style.width=b.dataset.w+'%'));
   }catch(e){
     out.innerHTML='<div class="hint"><span class="big">⚠️</span>Hubo un problema al consultar.<br>Intenta de nuevo en un momento.</div>';
   }finally{
@@ -208,6 +197,8 @@ async function tarjeta(k){
     ? '<div class="clist">'+prox.map(c=>fila(c,'next')).join('')+'</div>'
     : '<div class="empty">No tiene próximas clases agendadas.</div>';
 
+  const skillsHtml = await skillsSection(k);
+
   return '<div class="kid">'+
     '<div class="kid-head">'+
       '<div class="kid-name">'+escapeHtml(k.nom)+'</div>'+
@@ -215,10 +206,37 @@ async function tarjeta(k){
       (k.niv?'<span class="badge '+nivClass(k.niv)+'">'+escapeHtml(k.niv)+'</span>':'')+
     '</div>'+
     '<div class="prog">'+progHtml+'</div>'+
+    skillsHtml+
     '<div class="sec-t">📅 Próximas clases</div>'+proxHtml+
     '<div class="divider"></div>'+
     '<div class="sec-t">✅ Clases completadas ('+hechas.length+')</div>'+histHtml+
   '</div>';
+}
+
+async function skillsSection(k){
+  const pr=await sb.from('progreso_publico').select('*').eq('cid',k.id).limit(1);
+  const p=(pr.data&&pr.data[0])||null;
+  if(!p) return '';
+  const skills=[
+    ['Flotación',p.flo,'#1d9e75','#7ee0a8'],
+    ['Respiración',p.resp,'#378add','#7fb6f8'],
+    ['Patada',p.pat,'#7f77dd','#b9a8ff'],
+    ['Confianza',p.conf,'#ba7517','#f3c969'],
+    ['Resistencia',p.rsi,'#d4537e','#f4a3bf']
+  ];
+  const hasData = skills.some(s=>(+s[1]||0)>0) || (p.dom&&p.dom.trim()) || (p.met&&p.met.trim());
+  if(!hasData) return '';
+  const bars=skills.map(function(s){
+    const v=Math.max(0,Math.min(100,+s[1]||0));
+    return '<div class="skill"><div class="sl"><span>'+s[0]+'</span><span class="v" style="color:'+s[3]+'">'+v+'</span></div>'+
+      '<div class="sbar"><div class="sfill" data-w="'+v+'" style="width:0%;background:'+s[2]+'"></div></div></div>';
+  }).join('');
+  let pills='';
+  if(p.dom&&p.dom.trim()) pills+='<div class="pill pdom"><b>Ya domina</b>'+escapeHtml(p.dom)+'</div>';
+  if(p.met&&p.met.trim()) pills+='<div class="pill pmeta"><b>Meta actual</b>'+escapeHtml(p.met)+'</div>';
+  const nombre=escapeHtml(k.nom.split(' ')[0]);
+  return '<div class="divider"></div><div class="sec-t">🏊 Cómo va '+nombre+'</div>'+
+    '<div class="skills">'+bars+(pills?'<div class="pills">'+pills+'</div>':'')+'</div>';
 }
 
 function fila(c,tipo){
