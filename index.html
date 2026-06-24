@@ -1,3 +1,25 @@
+-- ‚ïê‚ïê‚ïê‚ïê PROGRESO: tabla + seguridad + ventana p√∫blica ‚ïê‚ïê‚ïê‚ïê
+create table if not exists public.progreso (
+  cid bigint primary key,
+  dom text, deb text, met text, est text,
+  flo int default 0, resp int default 0, pat int default 0, conf int default 0, rsi int default 0
+);
+alter table public.progreso enable row level security;
+drop policy if exists "admin_progreso" on public.progreso;
+create policy "admin_progreso" on public.progreso for all to authenticated using (true) with check (true);
+-- ventana p√∫blica (lo que ven los pap√°s: habilidades + lo que domina + meta, en positivo)
+create or replace view public.progreso_publico as
+  select cid, dom, met, est, flo, resp, pat, conf, rsi from public.progreso;
+grant select on public.progreso_publico to anon;
+
+-- ‚ïê‚ïê‚ïê‚ïê Subir tu progreso actual ‚ïê‚ïê‚ïê‚ïê
+insert into public.progreso (cid,dom,deb,met,est,flo,resp,pat,conf,rsi) values (1,'Control de cara','Flotaci√≥n','Flotaci√≥n asistida','En progreso',30,40,20,65,20) on conflict (cid) do update set dom=excluded.dom,deb=excluded.deb,met=excluded.met,est=excluded.est,flo=excluded.flo,resp=excluded.resp,pat=excluded.pat,conf=excluded.conf,rsi=excluded.rsi;
+insert into public.progreso (cid,dom,deb,met,est,flo,resp,pat,conf,rsi) values (2,'Adaptaci√≥n inicial','Todo','Meter cara sin miedo','En progreso',15,10,10,25,10) on conflict (cid) do update set dom=excluded.dom,deb=excluded.deb,met=excluded.met,est=excluded.est,flo=excluded.flo,resp=excluded.resp,pat=excluded.pat,conf=excluded.conf,rsi=excluded.rsi;
+insert into public.progreso (cid,dom,deb,met,est,flo,resp,pat,conf,rsi) values (3,'Sumersi√≥n y cara','Respiraci√≥n','Respiraci√≥n controlada','En progreso',50,35,40,80,30) on conflict (cid) do update set dom=excluded.dom,deb=excluded.deb,met=excluded.met,est=excluded.est,flo=excluded.flo,resp=excluded.resp,pat=excluded.pat,conf=excluded.conf,rsi=excluded.rsi;
+insert into public.progreso (cid,dom,deb,met,est,flo,resp,pat,conf,rsi) values (4,'Nado libre','Espalda','Dominar espalda completo','En progreso',90,85,88,95,80) on conflict (cid) do update set dom=excluded.dom,deb=excluded.deb,met=excluded.met,est=excluded.est,flo=excluded.flo,resp=excluded.resp,pat=excluded.pat,conf=excluded.conf,rsi=excluded.rsi;
+insert into public.progreso (cid,dom,deb,met,est,flo,resp,pat,conf,rsi) values (5,'Control respiraci√≥n','Coordinaci√≥n','Nivel 2 completo','En progreso',55,60,45,70,40) on conflict (cid) do update set dom=excluded.dom,deb=excluded.deb,met=excluded.met,est=excluded.est,flo=excluded.flo,resp=excluded.resp,pat=excluded.pat,conf=excluded.conf,rsi=excluded.rsi;
+insert into public.progreso (cid,dom,deb,met,est,flo,resp,pat,conf,rsi) values (7,'mete cara','tension en el agua','flotaci√≥n','En progreso',50,50,50,50,50) on conflict (cid) do update set dom=excluded.dom,deb=excluded.deb,met=excluded.met,est=excluded.est,flo=excluded.flo,resp=excluded.resp,pat=excluded.pat,conf=excluded.conf,rsi=excluded.rsi;
+insert into public.progreso (cid,dom,deb,met,est,flo,resp,pat,conf,rsi) values (6,'','miedo','meter cara','En progreso',10,10,50,10,10) on conflict (cid) do update set dom=excluded.dom,deb=excluded.deb,met=excluded.met,est=excluded.est,flo=excluded.flo,resp=excluded.resp,pat=excluded.pat,conf=excluded.conf,rsi=excluded.rsi;
 <!DOCTYPE html>
 <html lang="es">
 <head>
