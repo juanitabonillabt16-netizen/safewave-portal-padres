@@ -74,6 +74,33 @@ body{font-family:'Inter',system-ui,-apple-system,sans-serif;background:var(--bg)
 .sl .v{font-weight:600}
 .sbar{height:10px;background:var(--bg3);border-radius:6px;overflow:hidden}
 .sfill{height:100%;border-radius:6px;transition:width .7s cubic-bezier(.16,1,.3,1)}
+/* ── Nivel del alumno ── */
+.nivel{padding:4px 22px 20px}
+.nv-card{background:linear-gradient(160deg,var(--accent-soft),rgba(139,143,248,.03));border:1px solid var(--border);border-radius:16px;padding:18px}
+.nv-top{display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin-bottom:6px}
+.nv-nom{font-family:'Poppins',sans-serif;font-weight:700;font-size:17px;color:var(--accent);letter-spacing:-.01em}
+.nv-pct{font-family:'Poppins',sans-serif;font-weight:800;font-size:22px;color:var(--accent);font-variant-numeric:tabular-nums;flex:none}
+.nv-sub{font-size:12px;color:var(--text3);text-transform:uppercase;letter-spacing:.05em;font-weight:600;margin-bottom:10px}
+.nv-desc{font-size:14px;line-height:1.6;color:var(--text2);margin-bottom:16px}
+.nv-track{position:relative;height:14px;background:var(--bg3);border-radius:8px;overflow:hidden;margin-bottom:6px}
+.nv-fill{height:100%;border-radius:8px;background:linear-gradient(90deg,var(--accent2),var(--accent));transition:width .9s cubic-bezier(.16,1,.3,1)}
+.nv-ticks{position:relative;height:14px;margin-bottom:14px}
+.nv-tick{position:absolute;transform:translateX(-50%);font-size:10px;color:var(--text3);font-variant-numeric:tabular-nums}
+.nv-hitos{display:flex;flex-direction:column;gap:2px}
+.nv-h{display:flex;gap:10px;align-items:flex-start;padding:8px 0;border-top:1px solid var(--border)}
+.nv-h:first-child{border-top:none}
+.nv-mk{flex:none;width:22px;height:22px;border-radius:50%;display:grid;place-items:center;font-size:11px;font-weight:700;
+ background:var(--bg3);color:var(--text3);font-variant-numeric:tabular-nums}
+.nv-h.ok .nv-mk{background:var(--green-bg);color:var(--green)}
+.nv-h.now .nv-mk{background:var(--accent);color:#0a0a14}
+.nv-t{font-size:13px;line-height:1.5;color:var(--text3)}
+.nv-paso{display:block;font-size:13.5px;font-weight:600;color:var(--text2);margin-bottom:1px}
+.nv-h.ok .nv-paso{color:var(--text)}
+.nv-h.now .nv-paso{color:var(--accent)}
+.nv-h.ok .nv-t{color:var(--text2)}
+.nv-h.now .nv-t{color:var(--text);font-weight:500}
+.nv-now{margin-top:14px;background:var(--accent-soft);border-radius:10px;padding:11px 13px;font-size:13.5px;line-height:1.55;color:var(--text)}
+.nv-now b{display:block;font-size:11px;color:var(--accent);text-transform:uppercase;letter-spacing:.05em;font-weight:700;margin-bottom:3px}
 .pills{display:flex;gap:8px;flex-wrap:wrap;margin-top:18px}
 .pill{font-size:13px;padding:9px 13px;border-radius:10px}
 .pill b{display:block;font-size:11px;opacity:.75;font-weight:600;text-transform:uppercase;letter-spacing:.04em;margin-bottom:2px}
@@ -157,7 +184,7 @@ async function buscar(){
     let html='';
     for(const k of kids){ html+=await tarjeta(k); }
     out.innerHTML=html;
-    requestAnimationFrame(()=>document.querySelectorAll('.bar-fill,.sfill').forEach(b=>b.style.width=b.dataset.w+'%'));
+    requestAnimationFrame(()=>document.querySelectorAll('.bar-fill,.sfill,.nv-fill').forEach(b=>b.style.width=b.dataset.w+'%'));
   }catch(e){
     out.innerHTML='<div class="hint"><span class="big">⚠️</span>Hubo un problema al consultar.<br>Intenta de nuevo en un momento.</div>';
   }finally{
@@ -213,10 +240,71 @@ async function tarjeta(k){
   '</div>';
 }
 
+/* Los 3 niveles del curriculum SafeWave, con sus hitos reales por clase. */
+const NIVELES={
+  1:{nom:'Nivel 1 — Inicial',sub:'Supervivencia · Bebés y principiantes',
+     desc:'El objetivo aquí no es la técnica, sino la confianza y el amor por el agua. Muchas repeticiones, mucho juego. Si el niño ríe, vamos por buen camino.',
+     hitos:[
+       {p:20, n:'Adaptación al agua',  t:'Entra al agua con confianza, salpica y juega sin miedo'},
+       {p:40, n:'Meter cara sin miedo',t:'Moja y mete la cara completa sin resistencia'},
+       {p:60, n:'Burbujas y sumersión',t:'Sopla burbujas y se sumerge a buscar juguetes'},
+       {p:80, n:'Flotación asistida',  t:'Flota de espalda y de barriga, y patea con tabla'},
+       {p:100,n:'Llegar a la pared',   t:'Salta, se orienta, llega a la pared y flota solo'}]},
+  2:{nom:'Nivel 2 — Medio',sub:'Base técnica',
+     desc:'Ya confía en el agua. Ahora construimos la base del nado real: primero las piernas, luego los brazos, después la respiración, y al final todo junto.',
+     hitos:[
+       {p:20, n:'Patada básica',        t:'Patada de libre con piernas rectas y tobillos sueltos'},
+       {p:40, n:'Flotación sin ayuda',  t:'Flota y se desliza sin ningún apoyo'},
+       {p:60, n:'Respiración controlada',t:'Voltea la cabeza y respira al lado de forma coordinada'},
+       {p:80, n:'Desplazamiento corto', t:'Nada 10 metros de libre sin parar'},
+       {p:100,n:'Supervivencia básica', t:'Cae al agua, se orienta solo y sale sin ayuda'}]},
+  3:{nom:'Nivel 3 — Avanzado',sub:'Técnica libre y espalda',
+     desc:'El fundamento está listo. Refinamos la técnica, alargamos distancias y construimos resistencia hasta la independencia total en el agua.',
+     hitos:[
+       {p:20, n:'Nado libre completo',   t:'25 metros de libre con brazada pulida y codo alto'},
+       {p:40, n:'Espalda',               t:'25 metros de espalda continuos'},
+       {p:60, n:'Coordinación completa', t:'Respiración bilateral y cambio de estilo a mitad de largo'},
+       {p:80, n:'Resistencia',           t:'Nado continuo de 100 metros sin parar'},
+       {p:100,n:'Independencia total',   t:'50 m libre y 25 m espalda: autonomía completa en el agua'}]}
+};
+function numNivel(niv){const m=String(niv||'').match(/[123]/);return m?+m[0]:1;}
+function nivelSection(k,p){
+  const N=NIVELES[numNivel(k.niv)]; if(!N) return '';
+  const vs=[p.flo,p.resp,p.pat,p.conf,p.rsi].map(v=>Math.max(0,Math.min(100,+v||0)));
+  const pct=Math.round(vs.reduce((a,b)=>a+b,0)/vs.length);
+  if(!pct) return '';
+  // El hito actual es el ultimo alcanzado; el siguiente es lo que viene.
+  let idxAhora=-1;
+  N.hitos.forEach(function(h,i){ if(pct>=h.p) idxAhora=i; });
+  const sig=N.hitos[idxAhora+1]||null;
+  const hitos=N.hitos.map(function(h,i){
+    const cls = pct>=h.p ? (i===idxAhora?'nv-h ok now':'nv-h ok') : 'nv-h';
+    return '<div class="'+cls+'"><span class="nv-mk">'+(pct>=h.p?'✓':h.p)+'</span>'+
+      '<span class="nv-t"><b class="nv-paso">'+escapeHtml(h.n)+'</b>'+escapeHtml(h.t)+'</span></div>';
+  }).join('');
+  const ticks=N.hitos.filter(h=>h.p!==40&&h.p!==80).map(h=>'<span class="nv-tick" style="left:'+h.p+'%">'+h.p+'%</span>').join('');
+  const nombre=escapeHtml(k.nom.split(' ')[0]);
+  const ahora = idxAhora>=0
+    ? '<div class="nv-now"><b>Dónde va ahora</b>'+escapeHtml(N.hitos[idxAhora].n)+' — '+escapeHtml(N.hitos[idxAhora].t)+
+      (sig?'<br><span style="color:var(--text2)">Lo que viene: '+escapeHtml(sig.n)+'</span>':'')+'</div>'
+    : (sig?'<div class="nv-now"><b>Lo que viene</b>'+escapeHtml(sig.n)+' — '+escapeHtml(sig.t)+'</div>':'');
+  return '<div class="divider"></div><div class="sec-t">🎯 Su nivel</div>'+
+    '<div class="nivel"><div class="nv-card">'+
+      '<div class="nv-top"><span class="nv-nom">'+escapeHtml(N.nom)+'</span><span class="nv-pct">'+pct+'%</span></div>'+
+      '<div class="nv-sub">'+escapeHtml(N.sub)+'</div>'+
+      '<div class="nv-desc">'+escapeHtml(N.desc)+'</div>'+
+      '<div class="nv-track"><div class="nv-fill" data-w="'+pct+'" style="width:0%"></div></div>'+
+      '<div class="nv-ticks">'+ticks+'</div>'+
+      '<div class="nv-hitos">'+hitos+'</div>'+
+      ahora+
+    '</div></div>';
+}
+
 async function skillsSection(k){
   const pr=await sb.from('progreso_publico').select('*').eq('cid',k.id).limit(1);
   const p=(pr.data&&pr.data[0])||null;
   if(!p) return '';
+  const nivelHtml=nivelSection(k,p);
   const skills=[
     ['Flotación',p.flo,'#1d9e75','#7ee0a8'],
     ['Respiración',p.resp,'#378add','#7fb6f8'],
@@ -225,7 +313,7 @@ async function skillsSection(k){
     ['Resistencia',p.rsi,'#d4537e','#f4a3bf']
   ];
   const hasData = skills.some(s=>(+s[1]||0)>0) || (p.dom&&p.dom.trim()) || (p.met&&p.met.trim());
-  if(!hasData) return '';
+  if(!hasData) return nivelHtml;
   const bars=skills.map(function(s){
     const v=Math.max(0,Math.min(100,+s[1]||0));
     return '<div class="skill"><div class="sl"><span>'+s[0]+'</span><span class="v" style="color:'+s[3]+'">'+v+'</span></div>'+
@@ -235,7 +323,8 @@ async function skillsSection(k){
   if(p.dom&&p.dom.trim()) pills+='<div class="pill pdom"><b>Ya domina</b>'+escapeHtml(p.dom)+'</div>';
   if(p.met&&p.met.trim()) pills+='<div class="pill pmeta"><b>Meta actual</b>'+escapeHtml(p.met)+'</div>';
   const nombre=escapeHtml(k.nom.split(' ')[0]);
-  return '<div class="divider"></div><div class="sec-t">🏊 Cómo va '+nombre+'</div>'+
+  return nivelHtml+
+    '<div class="divider"></div><div class="sec-t">🏊 Cómo va '+nombre+'</div>'+
     '<div class="skills">'+bars+(pills?'<div class="pills">'+pills+'</div>':'')+'</div>';
 }
 
