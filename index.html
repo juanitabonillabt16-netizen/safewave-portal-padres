@@ -3,343 +3,2081 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SafeWave Academy — Portal de Padres</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<title>SafeWave Academy</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
-  --bg:#0a0a14;--bg2:#13131f;--bg3:#1b1b2c;
-  --accent:#8b8ff8;--accent2:#6e72e8;--accent-soft:rgba(139,143,248,.14);
-  --text:#ecedf6;--text2:#9a9bb6;--text3:#6c6d85;
-  --border:rgba(139,143,248,.14);
-  --green:#7ee0a8;--green-bg:rgba(126,224,168,.12);
-  --blue:#7fb6f8;--blue-bg:rgba(127,182,248,.12);
-  --purp:#b9a8ff;--purp-bg:rgba(185,168,255,.12);
-  --amber:#f3c969;--amber-bg:rgba(243,201,105,.12);
+  --bg:#f7f6f2;--bg2:#ffffff;--bg3:#eeede8;
+  --text:#1a1a18;--text2:#5f5e5a;--text3:#888780;
+  --border:rgba(0,0,0,0.10);--border2:rgba(0,0,0,0.18);
+  --r:8px;--rl:12px;
+  --ocean:#0a3d6b;--teal:#0f6e56;
 }
-body{font-family:'Inter',system-ui,-apple-system,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;-webkit-font-smoothing:antialiased}
-.wrap{max-width:640px;margin:0 auto;padding:0 16px 70px}
+@media(prefers-color-scheme:dark){
+  :root{--bg:#1c1c1a;--bg2:#242422;--bg3:#1a1a18;--text:#f0efe9;--text2:#b4b2a9;--text3:#888780;--border:rgba(255,255,255,0.10);--border2:rgba(255,255,255,0.18)}
+  .bg_{background:#173404!important;color:#c0dd97!important}
+  .bb_{background:#042c53!important;color:#b5d4f4!important}
+  .bp_{background:#26215c!important;color:#cecbf6!important}
+  .ba_{background:#412402!important;color:#fac775!important}
+  .bgr_{background:#2c2c2a!important;color:#d3d1c7!important}
+  .br_{background:#501313!important;color:#f7c1c1!important}
+  .bt_{background:#04342c!important;color:#9fe1cb!important}
+  .hero{background:linear-gradient(135deg,#042c53 0%,#04342c 100%)!important}
+  .mbox{background:#242422!important;border-color:rgba(255,255,255,0.12)!important}
+  input,select,textarea{background:#1c1c1a!important;color:#f0efe9!important;border-color:rgba(255,255,255,0.15)!important}
+  .aw_{background:#412402!important}.ai_{background:#042c53!important}.ao_{background:#173404!important}
+  .opt-box{background:#1a1a18!important;border-color:rgba(255,255,255,0.1)!important}
+  .opt-card{background:#242422!important;border-color:rgba(255,255,255,0.08)!important}
+}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+.wrap{max-width:980px;margin:0 auto;padding:1.5rem}
 
 /* HERO */
-.hero{position:relative;text-align:center;padding:46px 24px 38px;overflow:hidden;
-  background:radial-gradient(130% 90% at 50% -20%, rgba(139,143,248,.40), rgba(110,114,232,.05) 55%, transparent 72%), var(--bg);}
-.brand{display:inline-flex;align-items:center;gap:10px;margin-bottom:26px}
-.brand .ic{width:30px;height:30px;border-radius:8px;background:linear-gradient(135deg,#1f7a5a,#2bb37e);display:flex;align-items:center;justify-content:center;font-size:16px;box-shadow:0 0 18px rgba(43,179,126,.4)}
-.brand span{font-family:'Poppins',sans-serif;font-weight:700;font-size:16px;color:var(--accent);letter-spacing:-.01em}
-.logo{width:118px;height:auto;display:block;margin:0 auto 22px;border-radius:18px;box-shadow:0 8px 30px rgba(43,179,126,.25)}
-.hero h1{font-family:'Poppins',sans-serif;font-weight:800;font-size:30px;line-height:1.12;color:var(--accent);letter-spacing:-.02em;margin-bottom:12px}
-.hero p{font-size:15px;color:var(--text2);max-width:420px;margin:0 auto;line-height:1.55}
+.hero{background:linear-gradient(135deg,#0a3d6b 0%,#0f6e56 100%);border-radius:var(--rl);padding:1.75rem 2rem;margin-bottom:1.25rem;color:#e1f5ee;position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;right:-40px;top:-40px;width:180px;height:180px;border-radius:50%;background:rgba(255,255,255,0.04)}
+.hbadge{display:inline-block;background:rgba(255,255,255,0.12);border:0.5px solid rgba(255,255,255,0.2);border-radius:20px;font-size:11px;padding:3px 11px;margin-bottom:10px;color:#9fe1cb;letter-spacing:.05em;text-transform:uppercase}
+.hero h1{font-size:24px;font-weight:500;color:#fff;margin-bottom:4px}
+.hero p{font-size:13px;color:#9fe1cb;line-height:1.6}
+.qa{display:flex;flex-wrap:wrap;gap:7px;margin-top:1rem}
+.qb{background:rgba(255,255,255,0.1);border:0.5px solid rgba(255,255,255,0.2);border-radius:var(--r);padding:7px 13px;font-size:12px;color:#e1f5ee;cursor:pointer;transition:background .15s;font-family:inherit}
+.qb:hover{background:rgba(255,255,255,0.2)}
+.qb-special{background:rgba(255,215,0,0.15);border-color:rgba(255,215,0,0.3);color:#ffd700}
+.qb-special:hover{background:rgba(255,215,0,0.25)}
 
-/* SEARCH */
-.searchbox{background:var(--bg2);border:1px solid var(--border);border-radius:18px;box-shadow:0 16px 50px rgba(0,0,0,.5);padding:20px;margin-top:8px;position:relative;z-index:2}
-.searchbox label{font-size:13px;color:var(--text2);font-weight:500;display:block;margin-bottom:9px}
-.srow{display:flex;gap:9px}
-#q{flex:1;padding:14px 15px;background:var(--bg);border:1px solid var(--border);border-radius:12px;font-size:15px;font-family:inherit;color:var(--text);outline:none;transition:border .15s,box-shadow .15s}
-#q::placeholder{color:var(--text3)}
-#q:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
-#go{padding:14px 22px;background:var(--accent);color:#0a0a14;border:none;border-radius:12px;font-size:15px;font-weight:700;font-family:'Poppins',sans-serif;cursor:pointer;transition:all .15s;box-shadow:0 0 22px rgba(139,143,248,.35)}
-#go:hover{background:#a0a3ff;box-shadow:0 0 30px rgba(139,143,248,.55)}
-#go:disabled{opacity:.55;cursor:default;box-shadow:none}
+/* TABS */
+.tabs{display:flex;gap:3px;border-bottom:0.5px solid var(--border);flex-wrap:wrap}
+.tab{padding:8px 15px;font-size:13px;cursor:pointer;border-radius:var(--r) var(--r) 0 0;color:var(--text2);border:0.5px solid transparent;border-bottom:none;transition:all .15s;white-space:nowrap}
+.tab:hover{color:var(--text);background:var(--bg2)}
+.tab.active{color:var(--text);background:var(--bg2);border-color:var(--border);font-weight:500;position:relative}
+.tab.active::after{content:'';position:absolute;bottom:-1px;left:0;right:0;height:1px;background:var(--bg2)}
+.tab-special{color:#854f0b!important}
+.tab-special.active{color:#854f0b!important}
+.sec{display:none;padding-top:1.25rem}
+.sec.active{display:block}
 
-/* RESULTS */
-#out{margin-top:20px}
-.hint{text-align:center;color:var(--text2);font-size:14px;padding:34px 10px;line-height:1.6}
-.hint .big{font-size:38px;display:block;margin-bottom:10px}
-.hint b{color:var(--text)}
+/* METRICS */
+.metrics{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin-bottom:1.25rem}
+.metric{background:var(--bg3);border-radius:var(--r);padding:13px 15px}
+.mlabel{font-size:11px;color:var(--text2);margin-bottom:5px;text-transform:uppercase;letter-spacing:.04em}
+.mval{font-size:22px;font-weight:500;color:var(--text)}
+.msub{font-size:11px;color:var(--text3);margin-top:2px}
 
-.kid{background:var(--bg2);border:1px solid var(--border);border-radius:18px;box-shadow:0 10px 36px rgba(0,0,0,.4);overflow:hidden;margin-bottom:18px;animation:rise .35s ease}
-@keyframes rise{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
-.kid-head{padding:20px 22px;background:linear-gradient(120deg,rgba(139,143,248,.10),transparent);border-bottom:1px solid var(--border)}
-.kid-name{font-family:'Poppins',sans-serif;font-size:21px;font-weight:700;color:var(--accent);letter-spacing:-.01em}
-.kid-sub{font-size:13px;color:var(--text2);margin-top:3px}
-.badge{display:inline-block;padding:4px 12px;border-radius:20px;font-size:12px;font-weight:600;margin-top:10px}
-.b1{background:var(--green-bg);color:var(--green)}.b2{background:var(--blue-bg);color:var(--blue)}.b3{background:var(--purp-bg);color:var(--purp)}
+/* CARD */
+.card{background:var(--bg2);border:0.5px solid var(--border);border-radius:var(--rl);overflow:hidden;margin-bottom:1rem}
+.chd{padding:11px 15px;border-bottom:0.5px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px}
+.ctitle{font-size:13px;font-weight:500;color:var(--text)}
+.acts{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
 
-.prog{padding:22px}
-.prog-top{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:11px}
-.prog-num{font-size:15px;color:var(--text2)}
-.prog-num b{font-family:'Poppins',sans-serif;font-size:27px;color:var(--text);font-weight:700;margin-right:2px}
-.prog-pct{font-size:13px;color:var(--accent);font-weight:600}
-.bar{height:13px;background:var(--bg3);border-radius:8px;overflow:hidden}
-.bar-fill{height:100%;background:linear-gradient(90deg,var(--accent2),var(--accent));border-radius:8px;transition:width .7s cubic-bezier(.16,1,.3,1);box-shadow:0 0 14px rgba(139,143,248,.5)}
-.pend{margin-top:10px;font-size:13px;color:var(--text2)}
-.pend b{color:var(--accent)}
-.porconf{font-size:15px;color:var(--amber);background:var(--amber-bg);padding:12px 15px;border-radius:12px;font-weight:500}
-.skills{padding:4px 22px 16px}
-.skill{margin-bottom:14px}
-.sl{display:flex;justify-content:space-between;font-size:14px;margin-bottom:6px;color:var(--text)}
-.sl .v{font-weight:600}
-.sbar{height:10px;background:var(--bg3);border-radius:6px;overflow:hidden}
-.sfill{height:100%;border-radius:6px;transition:width .7s cubic-bezier(.16,1,.3,1)}
-/* ── Nivel del alumno ── */
-.nivel{padding:4px 22px 20px}
-.nv-card{background:linear-gradient(160deg,var(--accent-soft),rgba(139,143,248,.03));border:1px solid var(--border);border-radius:16px;padding:18px}
-.nv-top{display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin-bottom:6px}
-.nv-nom{font-family:'Poppins',sans-serif;font-weight:700;font-size:17px;color:var(--accent);letter-spacing:-.01em}
-.nv-pct{font-family:'Poppins',sans-serif;font-weight:800;font-size:22px;color:var(--accent);font-variant-numeric:tabular-nums;flex:none}
-.nv-sub{font-size:12px;color:var(--text3);text-transform:uppercase;letter-spacing:.05em;font-weight:600;margin-bottom:10px}
-.nv-desc{font-size:14px;line-height:1.6;color:var(--text2);margin-bottom:16px}
-.nv-track{position:relative;height:14px;background:var(--bg3);border-radius:8px;overflow:hidden;margin-bottom:6px}
-.nv-fill{height:100%;border-radius:8px;background:linear-gradient(90deg,var(--accent2),var(--accent));transition:width .9s cubic-bezier(.16,1,.3,1)}
-.nv-ticks{position:relative;height:14px;margin-bottom:14px}
-.nv-tick{position:absolute;transform:translateX(-50%);font-size:10px;color:var(--text3);font-variant-numeric:tabular-nums}
-.nv-hitos{display:flex;flex-direction:column;gap:2px}
-.nv-h{display:flex;gap:10px;align-items:flex-start;padding:8px 0;border-top:1px solid var(--border)}
-.nv-h:first-child{border-top:none}
-.nv-mk{flex:none;width:22px;height:22px;border-radius:50%;display:grid;place-items:center;font-size:11px;font-weight:700;
- background:var(--bg3);color:var(--text3);font-variant-numeric:tabular-nums}
-.nv-h.ok .nv-mk{background:var(--green-bg);color:var(--green)}
-.nv-h.now .nv-mk{background:var(--accent);color:#0a0a14}
-.nv-t{font-size:13px;line-height:1.5;color:var(--text3)}
-.nv-paso{display:block;font-size:13.5px;font-weight:600;color:var(--text2);margin-bottom:1px}
-.nv-h.ok .nv-paso{color:var(--text)}
-.nv-h.now .nv-paso{color:var(--accent)}
-.nv-h.ok .nv-t{color:var(--text2)}
-.nv-h.now .nv-t{color:var(--text);font-weight:500}
-.nv-now{margin-top:14px;background:var(--accent-soft);border-radius:10px;padding:11px 13px;font-size:13.5px;line-height:1.55;color:var(--text)}
-.nv-now b{display:block;font-size:11px;color:var(--accent);text-transform:uppercase;letter-spacing:.05em;font-weight:700;margin-bottom:3px}
-.pills{display:flex;gap:8px;flex-wrap:wrap;margin-top:18px}
-.pill{font-size:13px;padding:9px 13px;border-radius:10px}
-.pill b{display:block;font-size:11px;opacity:.75;font-weight:600;text-transform:uppercase;letter-spacing:.04em;margin-bottom:2px}
-.pdom{background:var(--green-bg);color:var(--green)}
-.pmeta{background:var(--accent-soft);color:var(--purp)}
+/* BUTTONS */
+.btn{padding:5px 12px;font-size:12px;border-radius:var(--r);border:0.5px solid var(--border2);background:var(--bg2);color:var(--text);cursor:pointer;transition:all .15s;font-family:inherit}
+.btn:hover{background:var(--bg3)}
+.bp{background:#0a3d6b!important;color:#e1f5ee!important;border-color:#0a3d6b!important}
+.bp:hover{background:#0d4f86!important}
+.bd{background:#fcebeb!important;color:#a32d2d!important;border-color:#f09595!important}
+.bd:hover{background:#f7c1c1!important}
+.bsm{padding:3px 8px!important;font-size:11px!important}
+.bgold{background:linear-gradient(135deg,#b8860b,#daa520)!important;color:#fff!important;border-color:#b8860b!important}
+.bgold:hover{background:linear-gradient(135deg,#9a7209,#c4941a)!important}
 
-.sec-t{font-size:12px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;padding:0 22px;margin:8px 0 8px}
-.clist{padding:0 22px 8px}
-.cl{display:flex;align-items:center;gap:13px;padding:12px 0;border-bottom:1px solid rgba(255,255,255,.05)}
-.cl:last-child{border-bottom:none}
-.cl-ic{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
-.ic-done{background:var(--green-bg)}.ic-next{background:var(--blue-bg)}
-.cl-d{font-size:14px;font-weight:500;text-transform:capitalize;color:var(--text)}
-.cl-h{font-size:13px;color:var(--text2)}
-.empty{padding:14px 22px 20px;color:var(--text3);font-size:13px;font-style:italic}
-.divider{height:8px;background:var(--bg)}
-.foot{text-align:center;color:var(--text3);font-size:12px;margin-top:28px;line-height:1.7}
+/* TABLE */
+.tscroll{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{padding:9px 11px;text-align:left;font-size:11px;font-weight:500;color:var(--text2);text-transform:uppercase;letter-spacing:.04em;border-bottom:0.5px solid var(--border);background:var(--bg3);white-space:nowrap}
+td{padding:9px 11px;border-bottom:0.5px solid var(--border);color:var(--text);vertical-align:middle;white-space:nowrap}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:var(--bg3)}
+
+/* BADGES */
+.badge{display:inline-flex;align-items:center;padding:2px 8px;border-radius:20px;font-size:11px;font-weight:500;white-space:nowrap}
+.bg_{background:#eaf3de;color:#3b6d11}
+.bb_{background:#e6f1fb;color:#185fa5}
+.bp_{background:#eeedfe;color:#3c3489}
+.ba_{background:#faeeda;color:#854f0b}
+.bgr_{background:#f1efe8;color:#5f5e5a}
+.br_{background:#fcebeb;color:#a32d2d}
+.bt_{background:#e1f5ee;color:#0f6e56}
+
+/* PROGRESS BAR */
+.pbw{width:55px;display:inline-block;vertical-align:middle}
+.pb{height:4px;border-radius:2px;background:var(--border);overflow:hidden}
+.pbf{height:100%;border-radius:2px}
+
+/* LAYOUT */
+.two{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+@media(max-width:600px){.two{grid-template-columns:1fr}}
+
+/* TODAY */
+.titem{display:flex;align-items:center;gap:11px;padding:9px 14px;border-bottom:0.5px solid var(--border)}
+.titem:last-child{border-bottom:none}
+.tpill{font-size:12px;font-weight:500;color:var(--text2);min-width:52px}
+
+/* ALERT */
+.arow{display:flex;align-items:flex-start;gap:9px;padding:9px 13px;border-bottom:0.5px solid var(--border)}
+.arow:last-child{border-bottom:none}
+.aico{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:12px}
+.aw_{background:#faeeda}.ai_{background:#e6f1fb}.ao_{background:#eaf3de}
+
+/* LEVEL */
+.lsec{padding:14px 16px;border-bottom:0.5px solid var(--border)}
+.lsec:last-child{border-bottom:none}
+.sgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(155px,1fr));gap:5px;margin-top:8px}
+.si{padding:5px 9px;border-radius:var(--r);border:0.5px solid var(--border);font-size:12px;color:var(--text2);display:flex;align-items:center;gap:5px}
+.sdot{width:5px;height:5px;border-radius:50%;flex-shrink:0}
+
+/* LOG */
+.logi{padding:13px 15px;border-bottom:0.5px solid var(--border)}
+.logi:last-child{border-bottom:none}
+.loghd{display:flex;align-items:center;justify-content:space-between;margin-bottom:5px;flex-wrap:wrap;gap:4px}
+
+/* RADAR */
+.rwrap{padding:14px;display:flex;flex-wrap:wrap;gap:14px}
+.sradar{flex:1;min-width:185px}
+.sbrow{display:flex;align-items:center;gap:7px;margin-bottom:5px}
+.sblbl{font-size:11px;color:var(--text2);min-width:86px}
+.sbbg{flex:1;height:5px;border-radius:3px;background:var(--border);overflow:hidden}
+.sbf{height:100%;border-radius:3px}
+
+/* INCOME */
+.irow{display:flex;align-items:center;justify-content:space-between;padding:9px 14px;border-bottom:0.5px solid var(--border);font-size:13px;gap:6px}
+.irow:last-child{border-bottom:none}
+
+/* ══ OPTIMIZADOR ══ */
+.opt-box{background:var(--bg3);border-radius:var(--rl);padding:1.5rem;margin-bottom:1rem;border:0.5px solid var(--border)}
+.opt-title{font-size:18px;font-weight:600;color:var(--text);margin-bottom:4px;display:flex;align-items:center;gap:8px}
+.opt-sub{font-size:13px;color:var(--text2);margin-bottom:1.25rem;line-height:1.5}
+.opt-controls{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:1.25rem;align-items:flex-end}
+.opt-controls .fg1{min-width:160px;flex:1}
+.opt-run{padding:9px 20px;font-size:13px;font-weight:500;border-radius:var(--r);border:none;background:linear-gradient(135deg,#0a3d6b,#0f6e56);color:#e1f5ee;cursor:pointer;transition:opacity .15s;white-space:nowrap}
+.opt-run:hover{opacity:.88}
+.opt-run:disabled{opacity:.5;cursor:not-allowed}
+.opt-loading{display:none;align-items:center;gap:10px;padding:1rem;font-size:13px;color:var(--text2)}
+.opt-loading.show{display:flex}
+.spinner{width:18px;height:18px;border:2px solid var(--border2);border-top-color:#0a3d6b;border-radius:50%;animation:spin .7s linear infinite;flex-shrink:0}
+@keyframes spin{to{transform:rotate(360deg)}}
+.opt-result{display:none}
+.opt-result.show{display:block}
+.opt-cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px;margin-top:1rem}
+.opt-card{background:var(--bg2);border:0.5px solid var(--border);border-radius:var(--rl);padding:14px 16px}
+.opt-card-title{font-size:13px;font-weight:600;color:var(--text);margin-bottom:8px;display:flex;align-items:center;gap:6px}
+.opt-card p{font-size:12px;color:var(--text2);line-height:1.6;margin-bottom:6px}
+.opt-card p:last-child{margin-bottom:0}
+.opt-card strong{color:var(--text)}
+.opt-tag{display:inline-flex;align-items:center;padding:2px 8px;border-radius:20px;font-size:10px;font-weight:600;margin-right:4px;margin-bottom:4px}
+.opt-schedule{margin-top:10px}
+.opt-day{display:flex;align-items:flex-start;gap:10px;padding:6px 0;border-bottom:0.5px solid var(--border)}
+.opt-day:last-child{border-bottom:none}
+.opt-day-label{font-size:11px;font-weight:600;color:var(--text2);min-width:36px;text-transform:uppercase;letter-spacing:.04em;padding-top:2px}
+.opt-day-slots{display:flex;flex-wrap:wrap;gap:5px}
+.opt-slot{padding:3px 8px;border-radius:20px;font-size:11px;font-weight:500}
+.opt-analysis{background:linear-gradient(135deg,rgba(10,61,107,0.05),rgba(15,110,86,0.05));border:0.5px solid rgba(10,61,107,0.15);border-radius:var(--rl);padding:14px 16px;margin-top:12px;font-size:13px;color:var(--text2);line-height:1.7}
+.opt-analysis strong{color:var(--text)}
+
+/* MODAL */
+.moverlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.45);z-index:100;align-items:flex-start;justify-content:center;padding:2rem 1rem;overflow-y:auto}
+.moverlay.open{display:flex}
+.mbox{background:#fff;border:0.5px solid rgba(0,0,0,0.15);border-radius:var(--rl);padding:1.5rem;width:100%;max-width:560px;position:relative;margin:auto}
+.mtitle{font-size:15px;font-weight:500;margin-bottom:1.25rem;color:var(--text)}
+.mclose{position:absolute;top:1rem;right:1rem;background:none;border:none;font-size:18px;cursor:pointer;color:var(--text2);line-height:1}
+.fg{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media(max-width:480px){.fg{grid-template-columns:1fr}}
+.fg1{display:flex;flex-direction:column;gap:4px}
+.fgf{grid-column:1/-1}
+label{font-size:11px;font-weight:500;color:var(--text2);text-transform:uppercase;letter-spacing:.04em}
+input,select,textarea{padding:7px 10px;font-size:13px;border:0.5px solid var(--border2);border-radius:var(--r);background:var(--bg);color:var(--text);font-family:inherit;width:100%}
+input:focus,select:focus,textarea:focus{outline:2px solid #0a3d6b;outline-offset:1px}
+textarea{resize:vertical;min-height:68px}
+.facts{display:flex;gap:8px;justify-content:flex-end;margin-top:1.25rem;flex-wrap:wrap}
+
+/* TOAST */
+.toast{display:none;position:fixed;bottom:1.5rem;left:50%;transform:translateX(-50%);background:#1a1a18;color:#f0efe9;border-radius:var(--rl);padding:12px 18px;font-size:13px;z-index:200;box-shadow:0 4px 20px rgba(0,0,0,0.3);align-items:center;gap:12px;white-space:nowrap;max-width:90vw}
+.toast.open{display:flex}
+.empty{text-align:center;padding:2rem 1rem;color:var(--text3);font-size:13px}
+.nsync{display:inline-flex;align-items:center;gap:5px;font-size:11px;color:var(--text3);background:var(--bg3);border-radius:20px;padding:3px 9px;border:0.5px solid var(--border)}
+/* HORARIO DIARIO */
+.wday{flex:1;min-width:48px;padding:8px 4px;text-align:center;cursor:pointer;border-right:0.5px solid var(--border);transition:background .12s;user-select:none}
+.wday:last-child{border-right:none}
+.wday:hover{background:var(--bg3)}
+.wday.active{background:linear-gradient(135deg,#0a3d6b,#0f6e56)}
+.wday.active .wd-nombre,.wday.active .wd-num{color:#e1f5ee}
+.wday.active .wd-dot{background:#9fe1cb!important}
+.wday.hoy-d .wd-num{color:#0a3d6b;font-weight:700}
+.wd-nombre{font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.04em;margin-bottom:3px}
+.wd-num{font-size:16px;font-weight:500;color:var(--text);line-height:1}
+.wd-dot{width:5px;height:5px;border-radius:50%;background:transparent;margin:4px auto 0}
+.wd-dot.has{background:#0a3d6b}
+.sched-empty{padding:2.5rem 1rem;text-align:center;color:var(--text3);font-size:13px}
+.sched-slot{display:flex;gap:0;border-bottom:0.5px solid var(--border);min-height:62px}
+.sched-slot:last-child{border-bottom:none}
+.sched-hora{width:52px;padding:12px 8px 12px 14px;font-size:11px;font-weight:600;color:var(--text3);flex-shrink:0;border-right:0.5px solid var(--border);display:flex;align-items:flex-start}
+.sched-content{flex:1;padding:8px 12px;display:flex;flex-direction:column;gap:5px}
+.sched-clase{border-radius:var(--r);padding:8px 12px;display:flex;align-items:center;gap:10px;position:relative;overflow:hidden}
+.sched-clase::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px}
+.sc-n1::before{background:#3b6d11}.sc-n1{background:rgba(59,109,17,0.08)}
+.sc-n2::before{background:#854f0b}.sc-n2{background:rgba(133,79,11,0.08)}
+.sc-n3::before{background:#185fa5}.sc-n3{background:rgba(24,95,165,0.08)}
+.sc-n4::before{background:#3c3489}.sc-n4{background:rgba(60,52,137,0.08)}
+.sc-done{opacity:.5}
+.sched-alumno{font-size:13px;font-weight:600;color:var(--text)}
+.sc-fin{display:inline-block;margin-left:7px;font-size:10.5px;font-weight:700;letter-spacing:.03em;
+ background:#a8580c;color:#fff;border-radius:20px;padding:2px 9px;vertical-align:middle;white-space:nowrap}
+.sc-casi{display:inline-block;margin-left:7px;font-size:10.5px;font-weight:600;
+ color:var(--text2);border:1px solid var(--border);border-radius:20px;padding:2px 9px;
+ vertical-align:middle;white-space:nowrap}
+.sched-meta{font-size:11px;color:var(--text2);margin-top:1px}
+.sched-estado{margin-left:auto;flex-shrink:0}
+@media(prefers-color-scheme:dark){
+  .sc-n1{background:rgba(59,109,17,0.18)!important}
+  .sc-n2{background:rgba(133,79,11,0.18)!important}
+  .sc-n3{background:rgba(24,95,165,0.18)!important}
+  .sc-n4{background:rgba(60,52,137,0.18)!important}
+  .wday.hoy-d .wd-num{color:#9fe1cb}
+  .wd-dot.has{background:#378add}
+}
+.sched-clase input,.sched-clase select{padding:5px 8px;font-size:12px;border-radius:6px}
+@media(max-width:500px){.sched-clase [style*="grid-template-columns:1fr 1fr 1fr"]{grid-template-columns:1fr 1fr!important}}
+
+/* AGENDA CARDS */
+.ag-alumno-group{border-bottom:0.5px solid var(--border)}
+.ag-alumno-group:last-child{border-bottom:none}
+.ag-alumno-header{display:flex;align-items:center;gap:10px;padding:10px 15px;background:var(--bg3);border-bottom:0.5px solid var(--border);cursor:pointer;user-select:none}
+.ag-alumno-header:hover{background:var(--bg2)}
+.ag-alumno-nombre{font-size:13px;font-weight:600;color:var(--text);flex:1}
+.ag-clase-row{border-bottom:0.5px solid var(--border);padding:0}
+.ag-clase-row:last-child{border-bottom:none}
+.ag-clase-vista{display:flex;align-items:center;gap:10px;padding:10px 15px;cursor:pointer;transition:background .12s}
+.ag-clase-vista:hover{background:var(--bg3)}
+.ag-fecha-bloque{display:flex;flex-direction:column;align-items:center;min-width:44px;padding:4px 8px;border-radius:var(--r);background:var(--bg3);border:0.5px solid var(--border)}
+.ag-fecha-dia{font-size:18px;font-weight:600;color:var(--text);line-height:1}
+.ag-fecha-mes{font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.04em}
+.ag-clase-info{flex:1;min-width:0}
+.ag-clase-hora{font-size:14px;font-weight:500;color:var(--text)}
+.ag-clase-meta{font-size:12px;color:var(--text2);margin-top:2px}
+.ag-clase-not{font-size:11px;color:var(--text3);margin-top:2px;white-space:normal}
+.ag-editor{display:none;padding:12px 15px;background:var(--bg3);border-top:0.5px solid var(--border)}
+.ag-editor.open{display:block}
+.ag-editor-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:10px}
+@media(max-width:520px){.ag-editor-grid{grid-template-columns:1fr 1fr}}
+.ag-editor-actions{display:flex;gap:6px;justify-content:flex-end;align-items:center}
+.ag-nivel-bar{width:3px;border-radius:3px;align-self:stretch;flex-shrink:0}
 </style>
 </head>
 <body>
-<header class="hero">
-  <img src="safewave_logo.png" alt="SafeWave Academy" class="logo" onerror="this.style.display='none';var f=document.getElementById('brandFb');if(f)f.style.display='inline-flex'">
-  <div id="brandFb" class="brand" style="display:none"><span class="ic">🌊</span><span>SafeWave Academy</span></div>
-  <h1>Portal de Padres</h1>
-  <p>Consulta el progreso y las clases de tu hijo/a</p>
-</header>
-
+<div id="lg-overlay" style="display:none;position:fixed;inset:0;z-index:9999;background:linear-gradient(135deg,#0a3d6b,#0f6e56);align-items:center;justify-content:center;font-family:'Segoe UI',system-ui,sans-serif">
+  <div style="background:#fff;border-radius:14px;padding:28px 26px;width:min(360px,90vw);box-shadow:0 20px 60px rgba(0,0,0,.3)">
+    <div style="font-size:20px;font-weight:600;color:#0a3d6b;margin-bottom:4px">SafeWave Academy</div>
+    <div style="font-size:13px;color:#5f5e5a;margin-bottom:18px">Inicia sesión para acceder a tus datos</div>
+    <label style="font-size:12px;color:#5f5e5a">Correo</label>
+    <input id="lg-email" type="email" autocomplete="username" style="width:100%;padding:10px;margin:4px 0 12px;border:1px solid #ccc;border-radius:8px;box-sizing:border-box;font-size:14px">
+    <label style="font-size:12px;color:#5f5e5a">Contraseña</label>
+    <input id="lg-pass" type="password" autocomplete="current-password" onkeydown="if(event.key==='Enter')sbLogin()" style="width:100%;padding:10px;margin:4px 0 12px;border:1px solid #ccc;border-radius:8px;box-sizing:border-box;font-size:14px">
+    <div id="lg-err" style="color:#a32d2d;font-size:12px;min-height:16px;margin-bottom:8px"></div>
+    <button id="lg-btn" onclick="sbLogin()" style="width:100%;padding:11px;background:#0a3d6b;color:#fff;border:none;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit">Entrar</button>
+  </div>
+</div>
+<button id="sb-logout" onclick="sbLogout()" style="display:none;position:fixed;top:10px;right:10px;z-index:9997;padding:6px 12px;font-size:12px;background:rgba(255,255,255,.92);border:1px solid #ccc;border-radius:8px;cursor:pointer;font-family:inherit">Salir</button>
 <div class="wrap">
-  <div class="searchbox">
-    <label for="q">Escribe el nombre de tu hijo/a</label>
-    <div class="srow">
-      <input id="q" type="text" placeholder="Ej: Mateo, Sofía, Lili…" autocomplete="off" enterkeyhint="search">
-      <button id="go">Buscar</button>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hbadge">SafeWave Academy</div>
+  <h1>Panel de gestión</h1>
+  <p>Transforma niños en nadadores seguros, confiados e independientes en el agua.</p>
+  <div class="qa">
+    <button class="qb" onclick="openM('mC');resetC()">+ Nuevo alumno</button>
+    <button class="qb" onclick="openM('mA');resetA()">Agendar clase</button>
+    <button class="qb" onclick="openM('mL');resetL()">Registrar clase</button>
+    <button class="qb" onclick="openM('mPago');resetPago()">💵 Registrar pago</button>
+    <button class="qb" onclick="openM('mAviso');resetRecord()">📲 Recordatorios</button>
+    <button class="qb" onclick="openM('mRen');resetRen()">🔄 Renovar paquete</button>
+    <button class="qb" onclick="completarHorarios()">📅 Completar horarios</button>
+    <button class="qb" onclick="go('progreso')">Ver progreso</button>
+    <button class="qb qb-special" onclick="go('optimizador')">⚡ Optimizar horarios</button>
+  </div>
+</div>
+
+<!-- TABS -->
+<div class="tabs">
+  <div class="tab active" onclick="go('hoy')" data-tab="hoy">Panel de hoy</div>
+  <div class="tab" onclick="go('clientes')" data-tab="clientes">Alumnos</div>
+  <div class="tab" onclick="go('agenda')" data-tab="agenda">Agenda</div>
+  <div class="tab" onclick="go('niveles')" data-tab="niveles">Programas</div>
+  <div class="tab" onclick="go('log')" data-tab="log">Log de clases</div>
+  <div class="tab" onclick="go('progreso')" data-tab="progreso">Progreso</div>
+  <div class="tab" onclick="go('ingresos')" data-tab="ingresos">Ingresos</div>
+  <div class="tab" onclick="go('recordatorios')" data-tab="recordatorios">📌 Recordatorios</div>
+  <div class="tab tab-special" onclick="go('optimizador')" data-tab="optimizador">⚡ Optimizador</div>
+</div>
+
+<!-- HOY -->
+<div class="sec active" id="sec-hoy">
+  <div class="metrics" id="m-hoy"></div>
+  <div class="two">
+    <div class="card">
+      <div class="chd"><span class="ctitle" id="mini-lista-titulo">Clases de hoy</span><span id="dia-hoy" style="font-size:11px;color:var(--text3)"></span></div>
+      <div id="hoy-lista"></div>
+    </div>
+    <div class="card"><div class="chd"><span class="ctitle">Alertas inteligentes</span></div><div id="alertas"></div></div>
+  </div>
+  <!-- HORARIO DEL DÍA -->
+  <div class="card" id="card-horario">
+    <div class="chd">
+      <span class="ctitle" id="horario-titulo">Horario de hoy</span>
+      <div class="acts">
+        <button class="btn bsm" id="btn-prev-dia" onclick="cambiarDia(-1)">← Anterior</button>
+        <button class="btn bsm bp" onclick="irHoy()">Hoy</button>
+        <button class="btn bsm" id="btn-next-dia" onclick="cambiarDia(1)">Siguiente →</button>
+      </div>
+    </div>
+    <!-- Navegación semana -->
+    <div id="week-nav" style="display:flex;gap:0;border-bottom:0.5px solid var(--border);overflow-x:auto"></div>
+    <!-- Horario visual -->
+    <div id="day-schedule" style="padding:0"></div>
+  </div>
+</div>
+
+<!-- ALUMNOS -->
+<div class="sec" id="sec-clientes">
+  <div class="card">
+    <div class="chd">
+      <span class="ctitle">Alumnos — SafeWave Academy</span>
+      <div class="acts">
+        <select class="btn" id="filtroE" onchange="renderC()">
+          <option value="">Todos</option>
+          <option value="Activo">Activos</option>
+          <option value="Verano">Verano 2026</option>
+          <option value="Pausado">Pausados</option>
+          <option value="Finalizado">Finalizados</option>
+        </select>
+        <button class="btn bp" onclick="openM('mC');resetC()">+ Nuevo alumno</button>
+      </div>
+    </div>
+    <div class="tscroll"><table>
+      <thead><tr>
+        <th>Nombre</th><th>Edad</th><th>Zona</th><th>Nivel</th><th>Progreso</th>
+        <th>Horario</th><th>Paquete</th><th>Usadas</th><th>Restantes</th>
+        <th>Pago</th><th>Renovación</th><th>Estado</th><th>Contacto</th><th>Notas</th><th>Acciones</th>
+      </tr></thead>
+      <tbody id="tb-c"></tbody>
+    </table></div>
+  </div>
+</div>
+
+<!-- AGENDA -->
+<div class="sec" id="sec-agenda">
+  <div class="metrics" id="m-a"></div>
+  <div id="horas-panel" style="margin-bottom:16px"></div>
+  <div class="card">
+    <div class="chd">
+      <span class="ctitle">Agenda de clases</span>
+      <div class="acts">
+        <select class="btn" id="filtroNin" onchange="renderA()">
+          <option value="">Todos los alumnos</option>
+        </select>
+        <span class="nsync">Notion Calendar</span>
+        <button class="btn bp" onclick="openM('mA');resetA()">+ Agendar clase</button>
+      </div>
+    </div>
+    <div id="agenda-cards" style="padding:0"></div>
+  </div>
+</div>
+
+<!-- NIVELES -->
+<div class="sec" id="sec-niveles">
+  <div class="card">
+    <div class="chd"><span class="ctitle">Programas SafeWave — Niveles de enseñanza</span></div>
+    <div class="lsec">
+      <div style="font-size:13px;font-weight:500;display:flex;align-items:center;gap:8px"><span class="badge bg_" style="font-size:12px;padding:4px 10px">Nivel 1 — Adaptación</span> Perderle el miedo · Sumersión y flotación</div>
+      <div class="sgrid">
+        <div class="si"><span class="sdot" style="background:#639922"></span>Adaptación al agua</div>
+        <div class="si"><span class="sdot" style="background:#639922"></span>Mete la cara</div>
+        <div class="si"><span class="sdot" style="background:#639922"></span>Burbujas y sumersión</div>
+        <div class="si"><span class="sdot" style="background:#639922"></span>Flotación con apoyo</div>
+        <div class="si"><span class="sdot" style="background:#639922"></span>El giro con apoyo</div>
+      </div>
+    </div>
+    <div class="lsec">
+      <div style="font-size:13px;font-weight:500;display:flex;align-items:center;gap:8px"><span class="badge ba_" style="font-size:12px;padding:4px 10px">Nivel 2 — Autorrescate</span> Si se cae, sabe qué hacer</div>
+      <div class="sgrid">
+        <div class="si"><span class="sdot" style="background:#b5831a"></span>Vuelve a la pared</div>
+        <div class="si"><span class="sdot" style="background:#b5831a"></span>Flota de espalda solo</div>
+        <div class="si"><span class="sdot" style="background:#b5831a"></span>El giro solo</div>
+        <div class="si"><span class="sdot" style="background:#b5831a"></span>Se pone de pie</div>
+        <div class="si"><span class="sdot" style="background:#b5831a"></span>Autorrescate completo</div>
+      </div>
+    </div>
+    <div class="lsec">
+      <div style="font-size:13px;font-weight:500;display:flex;align-items:center;gap:8px"><span class="badge bb_" style="font-size:12px;padding:4px 10px">Nivel 3 — Fundamentos</span> La tabla · Técnica de libre y espalda</div>
+      <div class="sgrid">
+        <div class="si"><span class="sdot" style="background:#378add"></span>Patada básica</div>
+        <div class="si"><span class="sdot" style="background:#378add"></span>Flotación sin ayuda</div>
+        <div class="si"><span class="sdot" style="background:#378add"></span>Respiración controlada</div>
+        <div class="si"><span class="sdot" style="background:#378add"></span>Desplazamiento corto</div>
+        <div class="si"><span class="sdot" style="background:#378add"></span>Espalda básica</div>
+      </div>
+    </div>
+    <div class="lsec">
+      <div style="font-size:13px;font-weight:500;display:flex;align-items:center;gap:8px"><span class="badge bp_" style="font-size:12px;padding:4px 10px">Nivel 4 — Independencia</span> Técnica de libre y de espalda</div>
+      <div class="sgrid">
+        <div class="si"><span class="sdot" style="background:#7f77dd"></span>Nado libre completo</div>
+        <div class="si"><span class="sdot" style="background:#7f77dd"></span>Espalda</div>
+        <div class="si"><span class="sdot" style="background:#7f77dd"></span>Coordinación completa</div>
+        <div class="si"><span class="sdot" style="background:#7f77dd"></span>Resistencia</div>
+        <div class="si"><span class="sdot" style="background:#7f77dd"></span>Independencia total</div>
+      </div>
+    </div>
+    <div style="padding:14px 16px;border-top:0.5px solid var(--border)">
+      <div style="font-size:12px;font-weight:500;margin-bottom:9px">Etiquetas de progreso</div>
+      <div style="display:flex;flex-wrap:wrap;gap:7px">
+        <span class="badge bg_">Seguro en agua</span>
+        <span class="badge bb_">Flotación independiente</span>
+        <span class="badge bp_">Nado libre</span>
+        <span class="badge ba_">Graduado SafeWave</span>
+        <span class="badge bt_">Verano 2026</span>
+      </div>
     </div>
   </div>
+</div>
 
-  <div id="out">
-    <div class="hint">
-      <span class="big">👋</span>
-      Escribe el nombre de tu hijo/a y presiona <b>Buscar</b><br>para ver su progreso y sus clases.
+<!-- LOG -->
+<div class="sec" id="sec-log">
+  <div class="card">
+    <div class="chd"><span class="ctitle">Log de clases — Diario profesional</span>
+      <button class="btn bp" onclick="openM('mL');resetL()">+ Registrar clase</button>
+    </div>
+    <div id="log-lista"></div>
+  </div>
+</div>
+
+<!-- PROGRESO -->
+<div class="sec" id="sec-progreso">
+  <div class="card" style="margin-bottom:1rem">
+    <div class="chd"><span class="ctitle">Progreso de alumnos</span></div>
+    <div class="tscroll"><table>
+      <thead><tr><th>Niño</th><th>Nivel</th><th>Clases log</th><th>Habilidad dominante</th><th>Por mejorar</th><th>Meta</th><th>Estado</th><th>Acciones</th></tr></thead>
+      <tbody id="tb-p"></tbody>
+    </table></div>
+  </div>
+  <div class="card"><div class="chd"><span class="ctitle">Radar de habilidades</span></div><div class="rwrap" id="radar-wrap"></div></div>
+</div>
+
+<!-- INGRESOS -->
+<div class="sec" id="sec-ingresos">
+  <div class="metrics" id="m-i"></div>
+  <div class="card" style="margin-bottom:14px"><div class="chd"><span class="ctitle">📅 Ingresos por mes (para taxes)</span></div><div id="ingmes"></div></div>
+  <div class="two" style="margin-bottom:14px">
+    <div class="card"><div class="chd"><span class="ctitle">📦 Paquetes vendidos por mes</span></div><div id="paqmes"></div></div>
+    <div class="card"><div class="chd"><span class="ctitle">🏅 Paquetes por alumno</span></div><div id="paqnino"></div></div>
+  </div>
+  <div class="two">
+    <div class="card"><div class="chd"><span class="ctitle">Resumen de paquetes</span></div><div id="paquetes"></div></div>
+    <div class="card"><div class="chd"><span class="ctitle">Estado de cobros</span></div><div id="cobros"></div></div>
+  </div>
+  <div class="card"><div class="chd"><span class="ctitle">Ingresos por alumno</span></div>
+    <div style="position:relative;width:100%;height:200px;padding:10px 14px">
+      <canvas id="incomeChart" role="img" aria-label="Ingresos por alumno">Gráfica.</canvas>
     </div>
   </div>
+  <div class="card" style="margin-top:14px">
+    <div class="chd">
+      <span class="ctitle">📝 Notas importantes del mes</span>
+      <span id="notas-mes-label" style="font-size:11px;color:var(--text3)"></span>
+    </div>
+    <div style="padding:10px 14px">
+      <textarea id="notas-mes-input" placeholder="Ej: Pendiente cobrar a Romeo, hablar con mamá de Luciana sobre horario, revisar renovaciones de julio..." style="width:100%;min-height:110px;font-size:13px;line-height:1.7;padding:10px;border-radius:8px;resize:vertical;box-sizing:border-box" oninput="guardarNotasMes()"></textarea>
+      <div style="font-size:11px;color:var(--text3);margin-top:6px">Se guarda automáticamente · Cada mes se inicia en blanco (el anterior queda guardado)</div>
+    </div>
+  </div>
+</div>
 
-  <div class="foot">
-    🔒 Solo verás la información de tu hijo/a.<br>
-    SafeWave Academy · Miami-Dade, FL
+<!-- ══ OPTIMIZADOR ══ -->
+<div class="sec" id="sec-optimizador">
+  <div class="opt-box">
+    <div class="opt-title">⚡ Optimizador de Horarios</div>
+    <div class="opt-sub">La IA analiza las zonas de tus alumnos, sus horarios actuales, nivel y disponibilidad para sugerirte la estrategia más eficiente — menos viajes, mejor agrupación por zona, más clases en el mismo traslado.</div>
+
+    <div class="opt-controls">
+      <div class="fg1">
+        <label>Días disponibles</label>
+        <select id="opt-dias" multiple size="4" style="height:auto;min-height:80px">
+          <option value="Lunes" selected>Lunes</option>
+          <option value="Martes" selected>Martes</option>
+          <option value="Miércoles" selected>Miércoles</option>
+          <option value="Jueves" selected>Jueves</option>
+          <option value="Viernes" selected>Viernes</option>
+          <option value="Sábado" selected>Sábado</option>
+          <option value="Domingo">Domingo</option>
+        </select>
+        <span style="font-size:10px;color:var(--text3);margin-top:3px">Mantén Ctrl/Cmd para selección múltiple</span>
+      </div>
+      <div class="fg1">
+        <label>Hora inicio disponible</label>
+        <input type="time" id="opt-hinicio" value="09:00">
+        <label style="margin-top:8px">Hora fin disponible</label>
+        <input type="time" id="opt-hfin" value="18:00">
+      </div>
+      <div class="fg1">
+        <label>Duración por clase (min)</label>
+        <select id="opt-duracion">
+          <option value="30">30 minutos</option>
+          <option value="45" selected>45 minutos</option>
+          <option value="60">60 minutos</option>
+        </select>
+        <label style="margin-top:8px">Prioridad de optimización</label>
+        <select id="opt-prioridad">
+          <option value="zona">Agrupar por zona (menos viajes)</option>
+          <option value="nivel">Agrupar por nivel</option>
+          <option value="mixto" selected>Mixto — zona + nivel</option>
+        </select>
+      </div>
+      <div class="fg1">
+        <label>Contexto adicional (opcional)</label>
+        <textarea id="opt-contexto" placeholder="Ej: Los martes solo puedo por la tarde, la piscina norte cierra a las 5pm, prefiero no trabajar sábados..." style="min-height:80px"></textarea>
+      </div>
+    </div>
+
+    <button class="opt-run" id="opt-btn" onclick="runOptimizer()">⚡ Generar estrategia de horarios</button>
+  </div>
+
+  <div class="opt-loading" id="opt-loading">
+    <div class="spinner"></div>
+    <span id="opt-loading-msg">Analizando alumnos, zonas y disponibilidad...</span>
+  </div>
+
+  <div class="opt-result" id="opt-result">
+    <div class="card">
+      <div class="chd">
+        <span class="ctitle">Estrategia optimizada generada por IA</span>
+        <div class="acts">
+          <button class="btn bsm" onclick="runOptimizer()">🔄 Regenerar</button>
+          <button class="btn bp bsm" onclick="applySchedule()">✓ Aplicar a agenda</button>
+        </div>
+      </div>
+      <div style="padding:14px 16px">
+        <div id="opt-output"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="sec" id="sec-recordatorios">
+  <div class="card" style="margin-bottom:16px">
+    <div class="chd">
+      <span class="ctitle">🗓️ Rutina del mes</span>
+      <span id="rut-prog" style="font-size:12px;color:var(--text2)"></span>
+    </div>
+    <div id="rut-lista"></div>
+  </div>
+  <div class="chd" style="margin-bottom:12px">
+    <span class="ctitle">📌 Recordatorios</span>
+    <button class="btn bp bsm" onclick="openM('mRec')">+ Nuevo recordatorio</button>
+  </div>
+  <div id="rec-lista"></div>
+</div>
+
+</div><!-- /wrap -->
+
+
+<!-- RECORDATORIO -->
+<div class="moverlay" id="mRec">
+  <div class="mbox">
+    <button class="mclose" onclick="closeM('mRec')">✕</button>
+    <div class="mtitle">Nuevo recordatorio</div>
+    <div class="fg">
+      <div class="fg1 fgf"><label>Recordatorio *</label><textarea id="rec-texto" placeholder="Ej: Confirmar primera clase con Julie en junio" style="min-height:70px"></textarea></div>
+      <div class="fg1"><label>Fecha (opcional)</label><input id="rec-fecha" type="date"></div>
+      <div class="fg1"><label>Prioridad</label>
+        <select id="rec-prio">
+          <option value="Alta">🔴 Alta</option>
+          <option value="Media" selected>🟡 Media</option>
+          <option value="Baja">🟢 Baja</option>
+        </select>
+      </div>
+    </div>
+    <div class="facts">
+      <button class="btn" onclick="closeM('mRec')">Cancelar</button>
+      <button class="btn bp" onclick="saveRec()">Guardar recordatorio</button>
+    </div>
+  </div>
+</div>
+
+<!-- DELETE TOAST -->
+<div class="toast" id="toast">
+  <span id="toastMsg"></span>
+  <button class="btn bd bsm" id="toastYes">Eliminar</button>
+  <button class="btn bsm" onclick="cancelDel()">Cancelar</button>
+</div>
+
+<!-- ══════════ MODALES ══════════ -->
+
+<!-- ALUMNO -->
+<div class="moverlay" id="mC">
+  <div class="mbox">
+    <button class="mclose" onclick="closeM('mC')">✕</button>
+    <div class="mtitle" id="tC">Nuevo alumno</div>
+    <input type="hidden" id="c-id">
+    <div class="fg">
+      <div class="fg1 fgf"><label>Nombre *</label><input id="c-nom" placeholder="Ej: Mateo"></div>
+      <div class="fg1"><label>Edad</label><input id="c-edad" placeholder="Ej: 4 años / 16 meses"></div>
+      <div class="fg1"><label>Zona / Ubicación</label><input id="c-zona" placeholder="Ej: Norte, Centro, Sur, Miramar..."></div>
+      <div class="fg1"><label>Nivel *</label>
+        <select id="c-niv">
+          <option value="Nivel 1 — Adaptación">Nivel 1 — Adaptación</option>
+          <option value="Nivel 2 — Autorrescate">Nivel 2 — Autorrescate</option>
+          <option value="Nivel 3 — Fundamentos">Nivel 3 — Fundamentos</option>
+          <option value="Nivel 4 — Independencia">Nivel 4 — Independencia</option>
+        </select>
+      </div>
+      <div class="fg1"><label>Progreso</label>
+        <select id="c-prog"><option value="Bajo">Bajo</option><option value="Medio">Medio</option><option value="Alto">Alto</option></select>
+      </div>
+      <div class="fg1"><label>Horario / Repetición</label><input id="c-hor" placeholder="Ej: Lunes a jueves"></div>
+      <div class="fg1"><label>Próxima clase</label><input id="c-fecha" type="datetime-local"></div>
+      <div class="fg1"><label>Paquete (clases)</label>
+        <select id="c-paq">
+          <option value="10">10 clases — Paquete 365</option>
+          <option value="8">8 clases</option>
+          <option value="5">5 clases — $190</option>
+          <option value="12">12 clases</option>
+          <option value="0">Sin paquete aún</option>
+        </select>
+      </div>
+      <div class="fg1"><label>Clases usadas</label><input id="c-us" type="number" min="0" value="0"></div>
+      <div class="fg1"><label>Monto pagado ($)</label><input id="c-pag" type="number" min="0" placeholder="Ej: 100"></div>
+      <div class="fg1"><label>Monto total ($)</label><input id="c-tot" type="number" min="0" placeholder="Ej: 200"></div>
+      <div class="fg1"><label>Renovación</label><input id="c-reno" type="date"></div>
+      <div class="fg1"><label>Estado</label>
+        <select id="c-est">
+          <option value="Activo">Activo</option>
+          <option value="Verano">Verano 2026</option>
+          <option value="Pausado">Pausado</option>
+          <option value="Finalizado">Finalizado</option>
+          <option value="Por confirmar">Por confirmar</option>
+        </select>
+      </div>
+      <div class="fg1 fgf"><label>Contacto padre/madre</label><input id="c-con" placeholder="Nombre y teléfono"></div>
+      <div class="fg1 fgf"><label>Notas (comportamiento, miedos, logros)</label><textarea id="c-not" placeholder="Ej: Le tiene miedo al agua. Principiante. Mete caritas."></textarea></div>
+    </div>
+    <div class="facts">
+      <button class="btn" onclick="closeM('mC')">Cancelar</button>
+      <button class="btn bp" onclick="saveC()">Guardar alumno</button>
+    </div>
+  </div>
+</div>
+
+<!-- AGENDA -->
+<div class="moverlay" id="mA">
+  <div class="mbox">
+    <button class="mclose" onclick="closeM('mA')">✕</button>
+    <div class="mtitle" id="tA">Agendar clase</div>
+    <input type="hidden" id="a-id">
+    <div class="fg">
+      <div class="fg1"><label>Niño *</label><select id="a-nin"></select></div>
+      <div class="fg1"><label>Fecha *</label><input id="a-fec" type="date"></div>
+      <div class="fg1"><label>Hora *</label><input id="a-hora" type="time" value="10:00"></div>
+      <div class="fg1"><label>Repetición</label><input id="a-rep" placeholder="Ej: Martes a jueves"></div>
+      <div class="fg1"><label>Nivel</label>
+        <select id="a-niv">
+          <option>Nivel 1 — Adaptación</option>
+          <option>Nivel 2 — Autorrescate</option>
+          <option>Nivel 3 — Fundamentos</option>
+          <option>Nivel 4 — Independencia</option>
+        </select>
+      </div>
+      <div class="fg1"><label>Estado</label>
+        <select id="a-est"><option>Pendiente</option><option>Completada</option><option>Cancelada</option><option>Reprogramada</option></select>
+      </div>
+      <div class="fg1"><label>Instructor asignado</label><select id="a-instr"><option value="">Sin asignar</option></select></div>
+      <div class="fg1 fgf"><label>Notas</label><textarea id="a-not" placeholder="Objetivos, observaciones..."></textarea></div>
+    </div>
+    <div class="facts">
+      <button class="btn" onclick="closeM('mA')">Cancelar</button>
+      <button class="btn bp" onclick="saveA()">Guardar clase</button>
+    </div>
+  </div>
+</div>
+
+<!-- LOG -->
+<div class="moverlay" id="mAviso">
+  <div class="mbox">
+    <button class="mclose" onclick="closeM('mAviso')">✕</button>
+    <div class="mtitle">📲 Recordatorios para papás</div>
+    <div class="fg">
+      <div class="fg1"><label>Día de las clases</label><input id="rc-fec" type="date" onchange="renderRecord()"></div>
+      <div class="fg1"><label>&nbsp;</label>
+        <select id="rc-cuando" onchange="renderRecord()">
+          <option value="manana">Aviso el día antes ("mañana")</option>
+          <option value="hoy">Aviso el mismo día ("hoy")</option>
+        </select>
+      </div>
+    </div>
+    <div id="rc-lista" style="max-height:340px;overflow:auto;margin-top:4px"></div>
+    <div class="facts">
+      <button class="btn" onclick="closeM('mAviso')">Cerrar</button>
+      <button class="btn bp" onclick="copiarTodosRecord()">📋 Copiar todos</button>
+    </div>
+  </div>
+</div>
+
+<div class="moverlay" id="mRen">
+  <div class="mbox">
+    <button class="mclose" onclick="closeM('mRen')">✕</button>
+    <div class="mtitle">🔄 Renovar paquete</div>
+    <div class="fg">
+      <div class="fg1"><label>Alumno *</label><select id="rn-nin"></select></div>
+      <div class="fg1"><label>Fecha de renovación *</label><input id="rn-fec" type="date"></div>
+      <div class="fg1"><label>N.º de clases *</label>
+        <select id="rn-clases"><option value="0">Por confirmar</option><option value="5">5 clases</option><option value="6">6 clases</option><option value="8">8 clases</option><option value="10" selected>10 clases</option><option value="12">12 clases</option></select>
+      </div>
+      <div class="fg1"><label>Monto pagado ($)</label><input id="rn-monto" type="number" min="0" placeholder="0 si aún no paga"></div>
+      <div class="fg1"><label>Método de pago</label>
+        <select id="rn-met"><option>Transferencia</option><option>Zelle</option><option>Efectivo</option><option>Tarjeta</option><option>Otro</option></select>
+      </div>
+      <div class="fg1 fgf"><label>Nota</label><input id="rn-nota" placeholder="Ej: 2.º paquete"></div>
+    </div>
+    <div style="font-size:12px;color:var(--text2);padding:0 2px 8px">Se registra el paquete, se pone el contador en 0, se agenda su horario y (si hay monto) se guarda el pago del mes.</div>
+    <div class="facts">
+      <button class="btn" onclick="closeM('mRen')">Cancelar</button>
+      <button class="btn bp" onclick="saveRen()">Renovar</button>
+    </div>
+  </div>
+</div>
+
+<div class="moverlay" id="mPago">
+  <div class="mbox">
+    <button class="mclose" onclick="closeM('mPago')">✕</button>
+    <div class="mtitle">💵 Registrar pago</div>
+    <div class="fg">
+      <div class="fg1"><label>Alumno *</label><select id="pg-nin"></select></div>
+      <div class="fg1"><label>Fecha *</label><input id="pg-fec" type="date"></div>
+      <div class="fg1"><label>Monto ($) *</label><input id="pg-monto" type="number" min="0" placeholder="429"></div>
+      <div class="fg1"><label>Método</label>
+        <select id="pg-met"><option>Transferencia</option><option>Zelle</option><option>Efectivo</option><option>Tarjeta</option><option>Otro</option></select>
+      </div>
+      <div class="fg1 fgf"><label>Nota</label><input id="pg-nota" placeholder="Ej: Paquete 12 clases"></div>
+    </div>
+    <div class="facts">
+      <button class="btn" onclick="closeM('mPago')">Cancelar</button>
+      <button class="btn bp" onclick="savePago()">Guardar pago</button>
+    </div>
+  </div>
+</div>
+
+<div class="moverlay" id="mL">
+  <div class="mbox">
+    <button class="mclose" onclick="closeM('mL')">✕</button>
+    <div class="mtitle" id="tL">Registrar clase</div>
+    <input type="hidden" id="l-id">
+    <div class="fg">
+      <div class="fg1"><label>Niño *</label><select id="l-nin"></select></div>
+      <div class="fg1"><label>Fecha *</label><input id="l-fec" type="date"></div>
+      <div class="fg1"><label>Nivel trabajado</label>
+        <select id="l-niv">
+          <option>Nivel 1 — Adaptación</option>
+          <option>Nivel 2 — Autorrescate</option>
+          <option>Nivel 3 — Fundamentos</option>
+          <option>Nivel 4 — Independencia</option>
+        </select>
+      </div>
+      <div class="fg1"><label>Resultado (1–10)</label><input id="l-res" type="number" min="1" max="10" placeholder="8"></div>
+      <div class="fg1 fgf"><label>Objetivo de la clase *</label><input id="l-obj" placeholder="Ej: Flotación asistida, control de respiración"></div>
+      <div class="fg1 fgf"><label>Qué se hizo (detalle)</label><textarea id="l-det" placeholder="Describe las actividades realizadas..."></textarea></div>
+      <div class="fg1 fgf"><label>Progreso observado</label><textarea id="l-pro" placeholder="Avances notados en esta sesión..."></textarea></div>
+      <div class="fg1 fgf"><label>Dificultades</label><input id="l-dif" placeholder="Ej: Miedo al sumergirse"></div>
+      <div class="fg1 fgf"><label>Mensaje para padres</label><textarea id="l-pad" placeholder="Observaciones para compartir con la familia..."></textarea></div>
+    </div>
+    <div class="facts">
+      <button class="btn" onclick="closeM('mL')">Cancelar</button>
+      <button class="btn bp" onclick="saveL()">Guardar registro</button>
+    </div>
+  </div>
+</div>
+
+<!-- PROGRESO MODAL -->
+<div class="moverlay" id="mP">
+  <div class="mbox">
+    <button class="mclose" onclick="closeM('mP')">✕</button>
+    <div class="mtitle">Editar progreso del alumno</div>
+    <input type="hidden" id="p-cid">
+    <div class="fg">
+      <div class="fg1 fgf"><label>Nivel del alumno</label>
+        <div style="display:flex;gap:8px;align-items:center">
+          <select id="p-niv" style="flex:1" onchange="avisoNivel()">
+            <option value="Nivel 1 — Adaptación">Nivel 1 — Adaptación</option>
+            <option value="Nivel 2 — Autorrescate">Nivel 2 — Autorrescate</option>
+            <option value="Nivel 3 — Fundamentos">Nivel 3 — Fundamentos</option>
+            <option value="Nivel 4 — Independencia">Nivel 4 — Independencia</option>
+          </select>
+          <button type="button" class="btn bsm" id="p-subir" onclick="subirNivel()" style="flex:none">⬆️ Subir de nivel</button>
+        </div>
+        <div id="p-nivaviso" style="font-size:11.5px;color:var(--text2);margin-top:5px"></div>
+      </div>
+      <div class="fg1"><label>Habilidad dominante</label><input id="p-dom" placeholder="Ej: Flotación"></div>
+      <div class="fg1"><label>Por mejorar</label><input id="p-deb" placeholder="Ej: Respiración"></div>
+      <div class="fg1 fgf"><label>Meta siguiente nivel</label><input id="p-met" placeholder="Ej: Respiración controlada"></div>
+      <div class="fg1 fgf"><label>Estado</label>
+        <select id="p-est" onchange="avisoNivel()"><option value="En progreso">En progreso</option><option value="Listo para subir">Listo para subir</option></select>
+      </div>
+      <div class="fg1"><label>Flotación (0–100)</label><input id="p-flo" type="number" min="0" max="100"></div>
+      <div class="fg1"><label>Respiración (0–100)</label><input id="p-resp" type="number" min="0" max="100"></div>
+      <div class="fg1"><label>Patada (0–100)</label><input id="p-pat" type="number" min="0" max="100"></div>
+      <div class="fg1"><label>Confianza (0–100)</label><input id="p-conf" type="number" min="0" max="100"></div>
+      <div class="fg1"><label>Resistencia (0–100)</label><input id="p-rsi" type="number" min="0" max="100"></div>
+    </div>
+    <div class="facts">
+      <button class="btn" onclick="closeM('mP')">Cancelar</button>
+      <button class="btn bp" onclick="saveP()">Guardar progreso</button>
+    </div>
   </div>
 </div>
 
 <script>
+// ═══════════════════════════════════════════
+//  STORAGE
+// ═══════════════════════════════════════════
+const K={c:'sw_alumnos',a:'sw_agenda',l:'sw_log',p:'sw_prog',r:'sw_rec',n:'sw_notas',pagos:'sw_pagos',paq:'sw_paquetes'};
+function ld(k){try{return JSON.parse(localStorage.getItem(k))||[]}catch(e){return[]}}
+function sv(k,d){localStorage.setItem(k,JSON.stringify(d))}
+
+let C=ld(K.c),A=ld(K.a),L=ld(K.l),P=ld(K.p),R=ld(K.r),PG=ld(K.pagos),PQ=ld(K.paq);
+let INSTR=[];
+/* ===================== CAPA SUPABASE ===================== */
 const SB_URL='https://yfcvvtvvoqndwazprnul.supabase.co';
 const SB_ANON='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlmY3Z2dHZ2b3FuZHdhenBybnVsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODIwNzM5OTEsImV4cCI6MjA5NzY0OTk5MX0.53eNjNrhTVnw_UXnVLB2Ol7MtH5pIgp35eZtmYfrqs4';
 const sb=supabase.createClient(SB_URL,SB_ANON);
-
-const DIAS=['domingo','lunes','martes','miércoles','jueves','viernes','sábado'];
-const MES=['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];
-function hoyISO(){return new Date().toISOString().split('T')[0];}
-function fmtFecha(f){const d=new Date(f+'T00:00:00');return DIAS[d.getDay()]+' '+d.getDate()+' '+MES[d.getMonth()];}
-function fmtHora(h){if(!h)return'';const[H,M]=h.split(':');const n=+H;return((n%12)||12)+':'+M+(n>=12?'pm':'am');}
-function nivClass(n){if(!n)return'b1';if(n.includes('2'))return'b2';if(n.includes('3'))return'b3';return'b1';}
-
-const out=document.getElementById('out');
-const inp=document.getElementById('q');
-const btn=document.getElementById('go');
-
-async function buscar(){
-  const q=inp.value.trim();
-  if(!q){inp.focus();return;}
-  btn.disabled=true;btn.textContent='Buscando…';
-  out.innerHTML='<div class="hint"><span class="big">⏳</span>Buscando…</div>';
+let suppressSync=true;
+const _sv=sv;
+function aluToDB(a){const o=Object.assign({},a);o.notas=(o.not!=null?o.not:'');delete o.not;return o;}
+function aluFromDB(r){const o=Object.assign({},r);o.not=(r.notas!=null?r.notas:'');delete o.notas;return o;}
+function agToDB(e){const o=Object.assign({},e);o.notas=(o.not!=null?o.not:'');delete o.not;return o;}
+function agFromDB(r){const o=Object.assign({},r);o.not=(r.notas!=null?r.notas:'');delete o.notas;return o;}
+async function pushTable(table,rows,toDB,key){
+  key=key||'id';
   try{
-    const r=await sb.from('alumnos_publico').select('*').order('nom');
-    if(r.error)throw r.error;
-    const norm=s=>String(s||'').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').trim();
-    const nq=norm(q);
-    const kids=(r.data||[]).filter(k=>norm(k.nom).includes(nq));
-    if(kids.length===0){
-      out.innerHTML='<div class="hint"><span class="big">🔍</span>No encontramos a <b>'+escapeHtml(q)+'</b>.<br>Revisa que el nombre esté bien escrito.</div>';
-      return;
-    }
-    let html='';
-    for(const k of kids){ html+=await tarjeta(k); }
-    out.innerHTML=html;
-    requestAnimationFrame(()=>document.querySelectorAll('.bar-fill,.sfill,.nv-fill').forEach(b=>b.style.width=b.dataset.w+'%'));
-  }catch(e){
-    out.innerHTML='<div class="hint"><span class="big">⚠️</span>Hubo un problema al consultar.<br>Intenta de nuevo en un momento.</div>';
-  }finally{
-    btn.disabled=false;btn.textContent='Buscar';
-  }
+    const payload=rows.map(toDB);
+    if(payload.length){const u=await sb.from(table).upsert(payload);if(u.error)throw u.error;}
+    const sel=await sb.from(table).select(key);if(sel.error)throw sel.error;
+    const have=new Set(rows.map(function(r){return r[key];}));
+    const del=(sel.data||[]).map(function(r){return r[key];}).filter(function(id){return !have.has(id);});
+    if(del.length){const d=await sb.from(table).delete().in(key,del);if(d.error)throw d.error;}
+    syncFlash('Guardado en la nube');
+  }catch(err){syncFlash('No se pudo guardar en la nube: '+(err.message||err),true);}
 }
-
-async function tarjeta(k){
-  const cl=await sb.from('agenda_publico').select('*').eq('nin',k.nom).order('fec');
-  let clases=(cl.data||[]).filter(c=>c.est!=='Cancelada');
-  // Si el niño renovó, mostrar solo las clases del paquete actual (desde la renovación)
-  if(k.reno && /^\d{4}-\d{2}-\d{2}$/.test(k.reno)){ clases=clases.filter(c=>c.fec>=k.reno); }
-  const hoy=hoyISO();
-  const hechas=clases.filter(c=>c.est==='Completada').sort((a,b)=>b.fec.localeCompare(a.fec));
-  const prox=clases.filter(c=>c.est!=='Completada'&&c.fec>=hoy).sort((a,b)=>a.fec.localeCompare(b.fec));
-
-  const total=parseInt(k.paq)||0;
-  const done=k.us||0;
-  const pct=total>0?Math.min(100,Math.round(done/total*100)):0;
-  const faltan=total>0?Math.max(0,total-done):0;
-
-  let progHtml;
-  if(total>0){
-    progHtml=
-      '<div class="prog-top"><div class="prog-num"><b>'+done+'</b>de '+total+' clases</div>'+
-      '<div class="prog-pct">'+pct+'%</div></div>'+
-      '<div class="bar"><div class="bar-fill" data-w="'+pct+'" style="width:0%"></div></div>'+
-      '<div class="pend">'+(faltan>0?('Le quedan <b>'+faltan+'</b> clase'+(faltan>1?'s':'')+' por tomar.'):'¡Completó todas sus clases! 🎉')+'</div>';
+sv=function(k,d){_sv(k,d);if(suppressSync)return;if(k===K.c)pushTable('alumnos',C,aluToDB);else if(k===K.a)pushTable('agenda',A,agToDB);else if(k===K.p)pushTable('progreso',P,function(x){return x;},'cid');else if(k===K.pagos)pushTable('pagos',PG,function(x){return x;});else if(k===K.paq)pushTable('paquetes',PQ,function(x){return x;});else if(k===K.r)pushTable('recordatorios',R,function(x){return x;});};
+async function loadFromSupabase(){
+  try{
+    const a=await sb.from('alumnos').select('*');
+    const g=await sb.from('agenda').select('*');
+    const pr=await sb.from('progreso').select('*');
+    const pf=await sb.from('perfiles').select('id,nombre').eq('rol','empleado');
+    const pg=await sb.from('pagos').select('*');
+    if(a.error)throw a.error;if(g.error)throw g.error;
+    suppressSync=true;
+    C=(a.data||[]).map(aluFromDB);
+    A=(g.data||[]).map(agFromDB);
+    if(!pr.error){P=(pr.data||[]);_sv(K.p,P);}
+    if(!pf.error){INSTR=pf.data||[];}
+    if(!pg.error){PG=(pg.data||[]);_sv(K.pagos,PG);}
+    const pq=await sb.from('paquetes').select('*');
+    if(!pq.error){PQ=(pq.data||[]);_sv(K.paq,PQ);}
+    const rc=await sb.from('recordatorios').select('*');
+    if(!rc.error){R=(rc.data||[]);_sv(K.r,R);}
+    _sv(K.c,C);_sv(K.a,A);
+    suppressSync=false;
+    syncFlash('Datos cargados desde la nube');
+    // Repone automaticamente a los ninos con clases pendientes que se cayeron del calendario
+    try{ if(typeof completarHorarios==='function') completarHorarios(true); }catch(e){}
+    go(AT||'hoy');
+  }catch(err){alert('Error cargando datos de Supabase: '+(err.message||err));}
+}
+function syncFlash(msg,err){var el=document.getElementById('sb-flash');if(!el){el=document.createElement('div');el.id='sb-flash';el.style.cssText='position:fixed;bottom:16px;right:16px;z-index:9998;padding:8px 14px;border-radius:8px;font-size:12px;font-family:inherit;box-shadow:0 4px 16px rgba(0,0,0,.2);transition:opacity .3s';document.body.appendChild(el);}el.textContent=(err?'⚠️ ':'☁️ ')+msg;el.style.background=err?'#fcebeb':'#e1f5ee';el.style.color=err?'#a32d2d':'#0f6e56';el.style.opacity='1';clearTimeout(el._t);el._t=setTimeout(function(){el.style.opacity='0';},err?6000:2200);}
+async function sbLogin(){
+  var email=document.getElementById('lg-email').value.trim();
+  var pass=document.getElementById('lg-pass').value;
+  var err=document.getElementById('lg-err');var btn=document.getElementById('lg-btn');
+  err.textContent='';btn.disabled=true;btn.textContent='Entrando…';
+  var res=await sb.auth.signInWithPassword({email:email,password:pass});
+  btn.disabled=false;btn.textContent='Entrar';
+  if(res.error){err.textContent='No se pudo entrar: '+res.error.message;return;}
+  document.getElementById('lg-overlay').style.display='none';
+  document.getElementById('sb-logout').style.display='block';
+  await loadFromSupabase();
+}
+async function sbLogout(){await sb.auth.signOut();location.reload();}
+async function sbInit(){
+  var s=await sb.auth.getSession();
+  if(s.data&&s.data.session){
+    document.getElementById('lg-overlay').style.display='none';
+    document.getElementById('sb-logout').style.display='block';
+    await loadFromSupabase();
   }else{
-    progHtml='<div class="porconf">📦 Paquete por confirmar'+(done>0?(' · ya tomó '+done+' clase'+(done>1?'s':'')):'')+'</div>';
+    document.getElementById('lg-overlay').style.display='flex';
+    renderHoy();
+  }
+}
+/* =================== FIN CAPA SUPABASE =================== */
+// Seed recordatorios iniciales
+R=R.filter(r=>!/Julie en junio|Lina Perdomo/.test(r.texto||''));_sv(K.r,R);
+
+if(!localStorage.getItem('sw_seeded_v6')){
+  C=[
+    {id:1,nom:'Matías',edad:'3 años',zona:'',niv:'Nivel 1 — Adaptación',prog:'Bajo',hor:'Lunes a jueves',fecha:'2026-04-27T15:30',paq:'10',us:0,pag:100,tot:200,reno:'',est:'Activo',con:'Luisa R (mamá de Matías)',not:'No le tiene miedo al agua. Mete la carita. Control de respiración básico. Ya se defiende. Pagó mitad del paquete.'},
+    {id:2,nom:'Mateo',edad:'4 años',zona:'',niv:'Nivel 1 — Adaptación',prog:'Bajo',hor:'Viernes y sábado',fecha:'2026-05-01T16:00',paq:'10',us:0,pag:100,tot:200,reno:'',est:'Activo',con:'Maria Paula (mamá de Mateo)',not:'Principiante. Le tiene miedo al agua. Empezó hace poco. Pagó la mitad del paquete.'},
+    {id:3,nom:'Sophia',edad:'16 meses',zona:'',niv:'Nivel 3 — Fundamentos',prog:'Medio',hor:'Martes a jueves',fecha:'2026-04-28T12:45',paq:'10',us:0,pag:0,tot:200,reno:'',est:'Activo',con:'Mary',not:'Bebé de 16 meses. Mete caritas, se sumerge, le encanta el agua. Vamos a empezar respiración y supervivencia.'},
+    {id:4,nom:'Marianne',edad:'3 años',zona:'',niv:'Nivel 4 — Independencia',prog:'Alto',hor:'Miércoles y viernes',fecha:'2026-04-29T16:00',paq:'10',us:10,pag:200,tot:200,reno:'2026-04-30',est:'Activo',con:'Mary',not:'Nivel 3. Trabajando técnica. Maneja libre y empezando espalda. Le encanta el agua. Renueva paquete en 2 días.'},
+    {id:6,nom:'Niño nuevo 1',edad:'',zona:'',niv:'Nivel 1 — Adaptación',prog:'Bajo',hor:'Lunes',fecha:'2026-05-04T16:30',paq:'0',us:0,pag:0,tot:0,reno:'',est:'Activo',con:'Pendiente',not:'Primera clase gratuita el lunes 4:30pm. Pendiente información completa.'},
+    {id:7,nom:'Niño nuevo 2',edad:'',zona:'',niv:'Nivel 1 — Adaptación',prog:'Bajo',hor:'Lunes',fecha:'2026-05-04T16:30',paq:'0',us:0,pag:0,tot:0,reno:'',est:'Activo',con:'Pendiente',not:'Primera clase gratuita el lunes 4:30pm. Pendiente información completa.'},
+    {id:5,nom:'Tres hermanos (Pietro + 2)',edad:'Pietro: 3 años',zona:'',niv:'Nivel 3 — Fundamentos',prog:'Medio',hor:'2 veces a la semana',fecha:'2026-06-04T17:00',paq:'0',us:0,pag:0,tot:0,reno:'',est:'Verano',con:'Mamá de 3 niños — confirmar contacto',not:'Pietro: 3 años, nivel intermedio, ya ha tomado clases. Control de respiración, se defiende solo. Los otros 2 hermanos: info pendiente. Empiezan en verano.'},
+  ];
+  A=[
+    {id:1,nin:'Matías',fec:'2026-04-27',hora:'15:30',rep:'Lunes a jueves',niv:'Nivel 1 — Adaptación',est:'Completada',not:''},
+    {id:2,nin:'Sophia',fec:'2026-04-28',hora:'12:45',rep:'Martes a jueves',niv:'Nivel 3 — Fundamentos',est:'Pendiente',not:'Trabajar respiración y sumersión'},
+    {id:3,nin:'Marianne',fec:'2026-04-29',hora:'16:00',rep:'Miércoles y viernes',niv:'Nivel 4 — Independencia',est:'Pendiente',not:'Continuar técnica. Renovar paquete.'},
+    {id:4,nin:'Mateo',fec:'2026-05-01',hora:'16:00',rep:'Viernes y sábado',niv:'Nivel 1 — Adaptación',est:'Pendiente',not:'Primera clase formal. Adaptación al agua.'},
+    {id:5,nin:'Tres hermanos (Pietro + 2)',fec:'2026-06-04',hora:'17:00',rep:'2 veces a la semana',niv:'Nivel 3 — Fundamentos',est:'Pendiente',not:'Inicio de verano.'},
+  ];
+  L=[];
+  P=[
+    {cid:1,dom:'Control de cara',deb:'Flotación',met:'Flotación asistida',est:'En progreso',flo:30,resp:40,pat:20,conf:65,rsi:20},
+    {cid:2,dom:'Adaptación inicial',deb:'Todo',met:'Meter cara sin miedo',est:'En progreso',flo:15,resp:10,pat:10,conf:25,rsi:10},
+    {cid:3,dom:'Sumersión y cara',deb:'Respiración',met:'Respiración controlada',est:'En progreso',flo:50,resp:35,pat:40,conf:80,rsi:30},
+    {cid:4,dom:'Nado libre',deb:'Espalda',met:'Dominar espalda completo',est:'En progreso',flo:90,resp:85,pat:88,conf:95,rsi:80},
+    {cid:5,dom:'Control respiración',deb:'Coordinación',met:'Nivel 2 completo',est:'En progreso',flo:55,resp:60,pat:45,conf:70,rsi:40},
+  ];
+  sv(K.c,C);sv(K.a,A);sv(K.l,L);sv(K.p,P);
+  localStorage.setItem('sw_seeded_v6','1');
+
+// ═══ CARGAR CLASES DE MAYO ═══
+(function(){
+  const mayoClases = [{"id":1746000000000,"nin":"Marianne","fec":"2026-05-01","hora":"17:30","rep":"Viernes","niv":"Nivel 4 — Independencia","est":"Pendiente","not":""},{"id":1746000000001,"nin":"Mateo","fec":"2026-05-01","hora":"16:00","rep":"Viernes","niv":"Nivel 1 — Adaptación","est":"Pendiente","not":""},{"id":1746000000002,"nin":"Matías","fec":"2026-05-02","hora":"09:30","rep":"Sábados","niv":"Nivel 1 — Adaptación","est":"Pendiente","not":""},{"id":1746000000003,"nin":"Mateo","fec":"2026-05-02","hora":"11:00","rep":"Sábados","niv":"Nivel 1 — Adaptación","est":"Pendiente","not":""},{"id":1746000000004,"nin":"Matías","fec":"2026-05-04","hora":"15:30","rep":"Lun, Mar, Mié","niv":"Nivel 1 — Adaptación","est":"Pendiente","not":""},{"id":1746000000005,"nin":"Niño nuevo 1","fec":"2026-05-04","hora":"16:30","rep":"Lunes","niv":"Nivel 1 — Adaptación","est":"Pendiente","not":"Primera clase gratuita"},{"id":1746000000006,"nin":"Niño nuevo 2","fec":"2026-05-04","hora":"16:30","rep":"Lunes","niv":"Nivel 1 — Adaptación","est":"Pendiente","not":"Primera clase gratuita"},{"id":1746000000007,"nin":"Matías","fec":"2026-05-05","hora":"15:30","rep":"Lun, Mar, Mié","niv":"Nivel 1 — Adaptación","est":"Pendiente","not":""},{"id":1746000000008,"nin":"Sophia","fec":"2026-05-05","hora":"11:00","rep":"Mar, Mié, Jue","niv":"Nivel 3 — Fundamentos","est":"Pendiente","not":""},{"id":1746000000009,"nin":"Matías","fec":"2026-05-06","hora":"15:30","rep":"Lun, Mar, Mié","niv":"Nivel 1 — Adaptación","est":"Pendiente","not":""},{"id":1746000000010,"nin":"Sophia","fec":"2026-05-06","hora":"11:00","rep":"Mar, Mié, Jue","niv":"Nivel 3 — Fundamentos","est":"Pendiente","not":""},{"id":1746000000011,"nin":"Marianne","fec":"2026-05-06","hora":"16:30","rep":"Miércoles","niv":"Nivel 4 — Independencia","est":"Pendiente","not":""},{"id":1746000000012,"nin":"Sophia","fec":"2026-05-07","hora":"11:00","rep":"Mar, Mié, Jue","niv":"Nivel 3 — Fundamentos","est":"Pendiente","not":""},{"id":1746000000013,"nin":"Marianne","fec":"2026-05-08","hora":"17:30","rep":"Viernes","niv":"Nivel 4 — Independencia","est":"Pendiente","not":""},{"id":1746000000014,"nin":"Mateo","fec":"2026-05-08","hora":"16:00","rep":"Viernes","niv":"Nivel 1 — Adaptación","est":"Pendiente","not":""},{"id":1746000000015,"nin":"Matías","fec":"2026-05-09","hora":"09:30","rep":"Sábados","niv":"Nivel 1 — Adaptación","est":"Pendiente","not":""},{"id":1746000000016,"nin":"Mateo","fec":"2026-05-09","hora":"11:00","rep":"Sábados","niv":"Nivel 1 — Adaptación","est":"Pendiente","not":""},{"id":1746000000017,"nin":"Matías","fec":"2026-05-11","hora":"15:30","rep":"Lun, Mar, Mié","niv":"Nivel 1 — Adaptación","est":"Pendiente","not":""},{"id":1746000000018,"nin":"Niño nuevo 1","fec":"2026-05-11","hora":"16:30","rep":"Lunes","niv":"Nivel 1 — Adaptación","est":"Pendiente","not":"Primera clase gratuita"},{"id":1746000000019,"nin":"Niño nuevo 2","fec":"2026-05-11","hora":"16:30","rep":"Lunes","niv":"Nivel 1 — Adaptación","est":"Pendiente","not":"Primera clase gratuita"},{"id":1746000000020,"nin":"Matías","fec":"2026-05-12","hora":"15:30","rep":"Lun, Mar, Mié","niv":"Nivel 1 — Adaptación","est":"Pendiente","not":""},{"id":1746000000021,"nin":"Sophia","fec":"2026-05-12","hora":"11:00","rep":"Mar, Mié, Jue","niv":"Nivel 3 — Fundamentos","est":"Pendiente","not":""},{"id":1746000000022,"nin":"Matías","fec":"2026-05-13","hora":"15:30","rep":"Lun, Mar, Mié","niv":"Nivel 1 — Adaptación","est":"Pendiente","not":""},{"id":1746000000023,"nin":"Sophia","fec":"2026-05-13","hora":"11:00","rep":"Mar, Mié, Jue","niv":"Nivel 3 — Fundamentos","est":"Pendiente","not":""},{"id":1746000000024,"nin":"Marianne","fec":"2026-05-13","hora":"16:30","rep":"Miércoles","niv":"Nivel 4 — Independencia","est":"Pendiente","not":""},{"id":1746000000025,"nin":"Sophia","fec":"2026-05-14","hora":"11:00","rep":"Mar, Mié, Jue","niv":"Nivel 3 — Fundamentos","est":"Pendiente","not":""},{"id":1746000000026,"nin":"Marianne","fec":"2026-05-15","hora":"17:30","rep":"Viernes","niv":"Nivel 4 — Independencia","est":"Pendiente","not":""},{"id":1746000000027,"nin":"Mateo","fec":"2026-05-15","hora":"16:00","rep":"Viernes","niv":"Nivel 1 — Adaptación","est":"Pendiente","not":""},{"id":1746000000028,"nin":"Matías","fec":"2026-05-16","hora":"09:30","rep":"Sábados","niv":"Nivel 1 — Adaptación","est":"Pendiente","not":""},{"id":1746000000029,"nin":"Mateo","fec":"2026-05-16","hora":"11:00","rep":"Sábados","niv":"Nivel 1 — Adaptación","est":"Pendiente","not":""},{"id":1746000000030,"nin":"Matías","fec":"2026-05-18","hora":"15:30","rep":"Lun, Mar, Mié","niv":"Nivel 1 — Adaptación","est":"Pendiente","not":""},{"id":1746000000031,"nin":"Niño nuevo 1","fec":"2026-05-18","hora":"16:30","rep":"Lunes","niv":"Nivel 1 — Adaptación","est":"Pendiente","not":"Primera clase gratuita"},{"id":1746000000032,"nin":"Niño nuevo 2","fec":"2026-05-18","hora":"16:30","rep":"Lunes","niv":"Nivel 1 — Adaptación","est":"Pendiente","not":"Primera clase gratuita"},{"id":1746000000033,"nin":"Matías","fec":"2026-05-19","hora":"15:30","rep":"Lun, Mar, Mié","niv":"Nivel 1 — Adaptación","est":"Pendiente","not":""},{"id":1746000000034,"nin":"Sophia","fec":"2026-05-19","hora":"11:00","rep":"Mar, Mié, Jue","niv":"Nivel 3 — Fundamentos","est":"Pendiente","not":""},{"id":1746000000035,"nin":"Matías","fec":"2026-05-20","hora":"15:30","rep":"Lun, Mar, Mié","niv":"Nivel 1 — Adaptación","est":"Pendiente","not":""},{"id":1746000000036,"nin":"Sophia","fec":"2026-05-20","hora":"11:00","rep":"Mar, Mié, Jue","niv":"Nivel 3 — Fundamentos","est":"Pendiente","not":""},{"id":1746000000037,"nin":"Marianne","fec":"2026-05-20","hora":"16:30","rep":"Miércoles","niv":"Nivel 4 — Independencia","est":"Pendiente","not":""},{"id":1746000000038,"nin":"Sophia","fec":"2026-05-21","hora":"11:00","rep":"Mar, Mié, Jue","niv":"Nivel 3 — Fundamentos","est":"Pendiente","not":""},{"id":1746000000039,"nin":"Marianne","fec":"2026-05-22","hora":"17:30","rep":"Viernes","niv":"Nivel 4 — Independencia","est":"Pendiente","not":""},{"id":1746000000040,"nin":"Mateo","fec":"2026-05-22","hora":"16:00","rep":"Viernes","niv":"Nivel 1 — Adaptación","est":"Pendiente","not":""},{"id":1746000000041,"nin":"Matías","fec":"2026-05-23","hora":"09:30","rep":"Sábados","niv":"Nivel 1 — Adaptación","est":"Pendiente","not":""},{"id":1746000000042,"nin":"Mateo","fec":"2026-05-23","hora":"11:00","rep":"Sábados","niv":"Nivel 1 — Adaptación","est":"Pendiente","not":""},{"id":1746000000043,"nin":"Matías","fec":"2026-05-25","hora":"15:30","rep":"Lun, Mar, Mié","niv":"Nivel 1 — Adaptación","est":"Pendiente","not":""},{"id":1746000000044,"nin":"Niño nuevo 1","fec":"2026-05-25","hora":"16:30","rep":"Lunes","niv":"Nivel 1 — Adaptación","est":"Pendiente","not":"Primera clase gratuita"},{"id":1746000000045,"nin":"Niño nuevo 2","fec":"2026-05-25","hora":"16:30","rep":"Lunes","niv":"Nivel 1 — Adaptación","est":"Pendiente","not":"Primera clase gratuita"},{"id":1746000000046,"nin":"Matías","fec":"2026-05-26","hora":"15:30","rep":"Lun, Mar, Mié","niv":"Nivel 1 — Adaptación","est":"Pendiente","not":""},{"id":1746000000047,"nin":"Sophia","fec":"2026-05-26","hora":"11:00","rep":"Mar, Mié, Jue","niv":"Nivel 3 — Fundamentos","est":"Pendiente","not":""},{"id":1746000000048,"nin":"Matías","fec":"2026-05-27","hora":"15:30","rep":"Lun, Mar, Mié","niv":"Nivel 1 — Adaptación","est":"Pendiente","not":""},{"id":1746000000049,"nin":"Sophia","fec":"2026-05-27","hora":"11:00","rep":"Mar, Mié, Jue","niv":"Nivel 3 — Fundamentos","est":"Pendiente","not":""},{"id":1746000000050,"nin":"Marianne","fec":"2026-05-27","hora":"16:30","rep":"Miércoles","niv":"Nivel 4 — Independencia","est":"Pendiente","not":""},{"id":1746000000051,"nin":"Sophia","fec":"2026-05-28","hora":"11:00","rep":"Mar, Mié, Jue","niv":"Nivel 3 — Fundamentos","est":"Pendiente","not":""},{"id":1746000000052,"nin":"Marianne","fec":"2026-05-29","hora":"17:30","rep":"Viernes","niv":"Nivel 4 — Independencia","est":"Pendiente","not":""},{"id":1746000000053,"nin":"Mateo","fec":"2026-05-29","hora":"16:00","rep":"Viernes","niv":"Nivel 1 — Adaptación","est":"Pendiente","not":""},{"id":1746000000054,"nin":"Matías","fec":"2026-05-30","hora":"09:30","rep":"Sábados","niv":"Nivel 1 — Adaptación","est":"Pendiente","not":""},{"id":1746000000055,"nin":"Mateo","fec":"2026-05-30","hora":"11:00","rep":"Sábados","niv":"Nivel 1 — Adaptación","est":"Pendiente","not":""}];
+  let existing = [];
+  try{ existing = JSON.parse(localStorage.getItem('sw_agenda'))||[]; }catch(e){}
+  // Eliminar clases de mayo anteriores (fec 2026-05-*)
+  existing = existing.filter(a => !a.fec || !a.fec.startsWith('2026-05-'));
+  // Agregar las nuevas
+  const merged = existing.concat(mayoClases);
+  localStorage.setItem('sw_agenda', JSON.stringify(merged));
+  A = merged;
+})();
+
+// ═══ PATCH SEMANA 4-10 MAYO ═══
+(function(){
+  let alumnos = [];
+  let agenda = [];
+  try { alumnos = JSON.parse(localStorage.getItem('sw_alumnos'))||[]; } catch(e){}
+  try { agenda = JSON.parse(localStorage.getItem('sw_agenda'))||[]; } catch(e){}
+
+  const semanaMayo = ['2026-05-04','2026-05-05','2026-05-06','2026-05-07','2026-05-08','2026-05-09','2026-05-10'];
+
+  // 1. Renombrar Niño nuevo 1 → Romeo, Niño nuevo 2 → André en alumnos
+  alumnos = alumnos.map(a => {
+    if(a.nom === 'Niño nuevo 1') return {...a, nom:'Romeo', paq:'10', tot:200, est:'Activo', not:'Confirmó paquete 365 (10 clases). Primera clase gratuita el lunes 4:30pm.'};
+    if(a.nom === 'Niño nuevo 2') return {...a, nom:'André', paq:'10', tot:200, est:'Activo', not:'Confirmó paquete 365 (10 clases). Primera clase gratuita el lunes 4:30pm.'};
+    return a;
+  });
+
+  // 2. Renombrar en agenda
+  agenda = agenda.map(a => {
+    if(a.nin === 'Niño nuevo 1') return {...a, nin:'Romeo'};
+    if(a.nin === 'Niño nuevo 2') return {...a, nin:'André'};
+    return a;
+  });
+
+  // 3. Cancelar Matías esta semana (marcar como Cancelada con nota)
+  agenda = agenda.map(a => {
+    if(a.nin === 'Matías' && semanaMayo.includes(a.fec)){
+      return {...a, est:'Cancelada', not:'Enfermo esta semana'};
+    }
+    return a;
+  });
+
+  // 4. Eliminar las clases de Sophia de esta semana (las de mayo generadas)
+  agenda = agenda.filter(a => !(a.nin === 'Sophia' && semanaMayo.includes(a.fec)));
+
+  // 5. Agregar clases especiales de Sophia esta semana: Jue 7 14:00, Vie 8 14:00, Sáb 9 08:00
+  const sophiaExtra = [
+    {id: Date.now()+1, nin:'Sophia', fec:'2026-05-07', hora:'14:00', rep:'Solo esta semana', niv:'Nivel 3 — Fundamentos', est:'Pendiente', not:'Cambio especial esta semana — horario habitual: Mar/Mié/Jue 11am'},
+    {id: Date.now()+2, nin:'Sophia', fec:'2026-05-08', hora:'14:00', rep:'Solo esta semana', niv:'Nivel 3 — Fundamentos', est:'Pendiente', not:'Cambio especial esta semana — horario habitual: Mar/Mié/Jue 11am'},
+    {id: Date.now()+3, nin:'Sophia', fec:'2026-05-09', hora:'08:00', rep:'Solo esta semana', niv:'Nivel 3 — Fundamentos', est:'Pendiente', not:'Cambio especial esta semana — horario habitual: Mar/Mié/Jue 11am'},
+  ];
+  agenda = agenda.concat(sophiaExtra);
+
+  // Guardar
+  localStorage.setItem('sw_alumnos', JSON.stringify(alumnos));
+  localStorage.setItem('sw_agenda', JSON.stringify(agenda));
+  C = alumnos;
+  A = agenda;
+  console.log('Patch aplicado OK');
+})();
+
+}
+
+// ═══ HELPERS ═══
+function tod(){return new Date().toISOString().split('T')[0]}
+function fmt(d){if(!d)return'—';const x=new Date(d+'T00:00:00');return x.toLocaleDateString('es',{day:'2-digit',month:'short',year:'numeric'})}
+function fmtH(h){if(!h)return'—';const[hh,mm]=h.split(':');return((+hh%12)||12)+':'+mm+(+hh>=12?'pm':'am')}
+function trunc(s,n=22){return s&&s.length>n?s.slice(0,n-1)+'…':s||'—'}
+function nb(n){if(!n)return'bgr_';const m=String(n).match(/[1234]/);return{1:'bg_',2:'ba_',3:'bb_',4:'bp_'}[m?+m[0]:0]||'bgr_'}
+function eb(e){const m={'Activo':'bg_','Verano':'bt_','Pausado':'ba_','Finalizado':'bgr_','Completada':'bb_','Pendiente':'ba_','Cancelada':'br_','Reprogramada':'bgr_','En progreso':'ba_','Listo para subir':'bg_'};return m[e]||'bgr_'}
+function pb(p){return{'Bajo':'bg_','Medio':'bb_','Alto':'bp_'}[p]||'bgr_'}
+
+function openM(id){document.getElementById(id).classList.add('open')}
+function closeM(id){document.getElementById(id).classList.remove('open')}
+document.querySelectorAll('.moverlay').forEach(m=>m.addEventListener('click',e=>{if(e.target===m)m.classList.remove('open')}));
+function fillNin(sid){const s=document.getElementById(sid);if(!s)return;const cur=s.value;s.innerHTML=C.filter(c=>c.est==='Activo'||c.est==='Verano').map(c=>`<option>${c.nom}</option>`).join('');if(cur)s.value=cur}
+function fillInstr(sid){const s=document.getElementById(sid);if(!s)return;const cur=s.value;s.innerHTML='<option value="">Sin asignar</option>'+INSTR.map(i=>`<option value="${i.id}">${i.nombre||i.id}</option>`).join('');if(cur)s.value=cur}
+
+// ═══ CÁLCULO DE HORAS TRABAJADAS ═══
+// Regla: un niño solo en una dirección/día = 1 hora. Varios niños en la MISMA
+// dirección el mismo día = 30 min cada uno. Solo cuentan clases Completadas.
+function inicioSemanaISO(base){const x=new Date((base||tod())+'T00:00:00');const off=(x.getDay()+6)%7;x.setDate(x.getDate()-off);return x.toISOString().split('T')[0];}
+function sumarDiasISO(iso,n){const x=new Date(iso+'T00:00:00');x.setDate(x.getDate()+n);return x.toISOString().split('T')[0];}
+function horasDeClases(clases){
+  const grupos={};
+  clases.forEach((c,idx)=>{
+    const alu=C.find(a=>a.nom===c.nin)||{};
+    const zona=(alu.zona||'').trim().toLowerCase();
+    const key=zona?(c.fec+'||'+zona):('__solo__'+c.fec+'__'+idx);
+    (grupos[key]=grupos[key]||[]).push(c);
+  });
+  let horas=0;
+  Object.values(grupos).forEach(g=>{horas+=g.length===1?1:g.length*0.5;});
+  return horas;
+}
+function fmtHoras(h){return (Math.round(h*10)/10).toString().replace('.',',')+' h';}
+function renderHoras(){
+  const cont=document.getElementById('horas-panel');
+  if(!cont)return;
+  const ini=inicioSemanaISO(tod()), fin=sumarDiasISO(ini,6);
+  const meses=['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];
+  const rango=(iso=>{const d=new Date(iso+'T00:00:00');return d.getDate()+' '+meses[d.getMonth()];});
+  const completadasSemana=A.filter(a=>a.est==='Completada'&&a.fec>=ini&&a.fec<=fin);
+  // Agrupar por instructor
+  const porInstr={};
+  completadasSemana.forEach(a=>{const k=a.instr||'__sin__';(porInstr[k]=porInstr[k]||[]).push(a);});
+  const nombreInstr=id=>{if(id==='__sin__')return'Sin instructor asignado';const i=INSTR.find(x=>x.id===id);return i?(i.nombre||'Instructor'):'Instructor';};
+  const claves=Object.keys(porInstr);
+  let filas;
+  if(!claves.length){
+    filas='<div style="font-size:13px;color:var(--text3)">Aún no hay clases completadas esta semana.</div>';
+  }else{
+    filas=claves.sort((a,b)=>horasDeClases(porInstr[b])-horasDeClases(porInstr[a])).map(k=>{
+      const h=horasDeClases(porInstr[k]);
+      return `<div style="display:flex;justify-content:space-between;align-items:baseline;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.06)">
+        <span style="font-size:14px">${nombreInstr(k)}<span style="font-size:12px;color:var(--text3);margin-left:8px">${porInstr[k].length} clase${porInstr[k].length!==1?'s':''}</span></span>
+        <span style="font-family:inherit;font-weight:700;font-size:16px;color:var(--teal)">${fmtHoras(h)}</span>
+      </div>`;
+    }).join('');
+  }
+  cont.innerHTML=`<div class="card" style="padding:16px 18px">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+      <span class="ctitle">⏱️ Horas trabajadas esta semana</span>
+      <span style="font-size:12px;color:var(--text3)">${rango(ini)} – ${rango(fin)}</span>
+    </div>
+    ${filas}
+  </div>`;
+}
+
+// ═══ TABS ═══
+let AT='hoy';
+function go(id){
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.sec').forEach(s=>s.classList.remove('active'));
+  const t=document.querySelector('[data-tab="'+id+'"]');if(t)t.classList.add('active');
+  const s=document.getElementById('sec-'+id);if(s)s.classList.add('active');
+  AT=id;
+  const fn={hoy:renderHoy,clientes:renderC,agenda:renderA,log:renderLog,progreso:renderProg,ingresos:()=>{renderIng();setTimeout(cargarNotasMes,50);},recordatorios:renderRec};
+  if(fn[id])fn[id]();
+}
+
+// ═══ HOY + HORARIO DIARIO ═══
+let diaSeleccionado=tod();
+
+function semanaDesd(fecha){
+  const d=new Date(fecha+'T00:00:00');
+  const dow=d.getDay()===0?6:d.getDay()-1;
+  const lun=new Date(d);lun.setDate(d.getDate()-dow);
+  return Array.from({length:7},(_,i)=>{const x=new Date(lun);x.setDate(lun.getDate()+i);return x.toISOString().split('T')[0]});
+}
+function cambiarDia(delta){const d=new Date(diaSeleccionado+'T00:00:00');d.setDate(d.getDate()+delta);diaSeleccionado=d.toISOString().split('T')[0];renderHorario();}
+function irHoy(){diaSeleccionado=tod();renderHorario();}
+function selDia(fecha){diaSeleccionado=fecha;renderHorario();}
+function nivelClass(niv){const m=String(niv||'').match(/[1234]/);return 'sc-n'+(m?+m[0]:1);}
+
+// ═══ AVISO DE ÚLTIMA CLASE ═══
+// Dice cuántas clases del paquete le quedan a un niño DESPUÉS de la clase de esa
+// fecha. Devuelve null si no aplica (pausado, sin paquete, o ya se le acabó).
+function restanDespues(nin,fec){
+  const h=tod();
+  if(fec<h)return null;                         // el pasado no se avisa
+  const c=C.find(x=>x.nom===nin);
+  if(!c||c.est!=='Activo')return null;
+  // La verdad es la ficha del alumno: paquete menos usadas.
+  const rest=(+c.paq||0)-(+c.us||0);
+  if(rest<=0)return null;
+  // Solo cuentan las de HOY en adelante. Las pendientes viejas que nunca se
+  // marcaron no son clases por dar, y si se cuentan corren mal la cuenta.
+  const pend=A.filter(a=>a.nin===nin&&a.est==='Pendiente'&&a.fec>=h)
+              .sort((a,b)=>(a.fec||'').localeCompare(b.fec||''));
+  if(pend.length<rest)return null;              // aún le faltan clases por agendar
+  const i=pend.findIndex(a=>a.fec===fec);
+  if(i<0||i>=rest)return null;                  // esta clase ya es sobrante
+  return rest-1-i;
+}
+function avisoUltima(nin,fec){
+  const q=restanDespues(nin,fec);
+  if(q===null||q>1)return '';
+  return q===0
+    ? '<span class="sc-fin">🏁 Última clase</span>'
+    : '<span class="sc-casi">Le queda 1 después de esta</span>';
+}
+function terminanEl(fec){
+  return [...new Set(A.filter(a=>a.fec===fec&&a.est==='Pendiente').map(a=>a.nin))]
+    .filter(n=>restanDespues(n,fec)===0);
+}
+function renderHorario(){
+  const hoy=tod();
+  const semana=semanaDesd(diaSeleccionado);
+  const diasNom=['Lun','Mar','Mié','Jue','Vie','Sáb','Dom'];
+  const meses=['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];
+
+  // Navegador de semana
+  const nav=document.getElementById('week-nav');
+  if(!nav)return;
+  nav.innerHTML=semana.map((f,i)=>{
+    const d=new Date(f+'T00:00:00');
+    const clases=A.filter(a=>a.fec===f).length;
+    const isSel=f===diaSeleccionado,isHoy=f===hoy&&!isSel;
+    return`<div class="wday${isSel?' active':''}${isHoy?' hoy-d':''}" onclick="selDia('${f}')">
+      <div class="wd-nombre">${diasNom[i]}</div>
+      <div class="wd-num">${d.getDate()}</div>
+      <div class="wd-dot${clases?' has':''}"></div>
+    </div>`;
+  }).join('');
+
+  // Título del card
+  const selD=new Date(diaSeleccionado+'T00:00:00');
+  const dow=selD.getDay()===0?6:selD.getDay()-1;
+  const titulo=diaSeleccionado===hoy?'Horario de hoy — '+diasNom[dow]+' '+selD.getDate()+' '+meses[selD.getMonth()]:diasNom[dow]+' '+selD.getDate()+' '+meses[selD.getMonth()]+' '+selD.getFullYear();
+  document.getElementById('horario-titulo').textContent=titulo;
+
+  // Clases del día
+  const clasesHoy=A.filter(a=>a.fec===diaSeleccionado).sort((a,b)=>a.hora.localeCompare(b.hora));
+  const sched=document.getElementById('day-schedule');
+  if(!sched)return;
+
+  if(!clasesHoy.length){
+    sched.innerHTML=`<div class="sched-empty"><div style="font-size:28px;margin-bottom:8px">🌊</div><div style="font-weight:500;color:var(--text2)">Sin clases este día</div><div style="font-size:12px;margin-top:4px">Día libre — o agrega una clase con el botón + Agendar clase.</div></div>`;
+  } else {
+    const horasUnicas=[...new Set(clasesHoy.map(a=>a.hora))].sort();
+    sched.innerHTML=horasUnicas.map(hora=>{
+      const cls=clasesHoy.filter(a=>a.hora===hora);
+      return`<div class="sched-slot">
+        <div class="sched-hora">${fmtH(hora)}</div>
+        <div class="sched-content">${cls.map(a=>{
+          const al=C.find(c=>c.nom===a.nin)||{};
+          const nc=nivelClass(a.niv);
+          const done=a.est==='Completada';
+          return`<div class="sched-clase ${nc}${done?' sc-done':''}" id="sc-${a.id}">
+            <!-- VISTA -->
+            <div class="sc-view-${a.id}" style="display:flex;align-items:center;gap:10px;width:100%">
+              <div style="flex:1;min-width:0">
+                <div class="sched-alumno">${a.nin}${avisoUltima(a.nin,a.fec)}</div>
+                <div class="sched-meta">${a.niv}${al.zona?' · 📍'+al.zona:''}${a.rep?' · '+a.rep:''}</div>
+                ${a.not?`<div style="font-size:11px;color:var(--text3);margin-top:2px;white-space:normal">${a.not}</div>`:''}
+              </div>
+              <span class="badge ${eb(a.est)}" style="flex-shrink:0">${a.est}</span>
+              <button class="btn bsm" style="flex-shrink:0;background:rgba(10,61,107,0.08);border-color:rgba(10,61,107,0.2);color:#0a3d6b" onclick="abrirEditorHorario(${a.id})">✏ Editar</button>
+              <button class="btn bsm bd" style="flex-shrink:0" onclick="confirmDel('¿Eliminar clase de ${a.nin}?',()=>{A=A.filter(x=>x.id!==${a.id});sv(K.a,A);renderHorario();renderHoy()})">✕</button>
+            </div>
+            <!-- EDITOR INLINE (oculto) -->
+            <div class="sc-edit-${a.id}" style="display:none;width:100%;padding-top:10px;border-top:0.5px solid var(--border);margin-top:8px">
+              <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:8px">
+                <div style="display:flex;flex-direction:column;gap:3px">
+                  <label>Hora</label>
+                  <input type="time" id="se-hora-${a.id}" value="${a.hora}">
+                </div>
+                <div style="display:flex;flex-direction:column;gap:3px">
+                  <label>Fecha</label>
+                  <input type="date" id="se-fec-${a.id}" value="${a.fec}">
+                </div>
+                <div style="display:flex;flex-direction:column;gap:3px">
+                  <label>Estado</label>
+                  <select id="se-est-${a.id}">
+                    <option${a.est==='Pendiente'?' selected':''}>Pendiente</option>
+                    <option${a.est==='Completada'?' selected':''}>Completada</option>
+                    <option${a.est==='Cancelada'?' selected':''}>Cancelada</option>
+                    <option${a.est==='Reprogramada'?' selected':''}>Reprogramada</option>
+                  </select>
+                </div>
+                <div style="display:flex;flex-direction:column;gap:3px">
+                  <label>Nivel</label>
+                  <select id="se-niv-${a.id}">
+                    <option${a.niv==='Nivel 1 — Adaptación'?' selected':''}>Nivel 1 — Adaptación</option>
+                    <option${a.niv==='Nivel 2 — Autorrescate'?' selected':''}>Nivel 2 — Autorrescate</option>
+                    <option${a.niv==='Nivel 3 — Fundamentos'?' selected':''}>Nivel 3 — Fundamentos</option>
+                    <option${a.niv==='Nivel 4 — Independencia'?' selected':''}>Nivel 4 — Independencia</option>
+                  </select>
+                </div>
+                <div style="display:flex;flex-direction:column;gap:3px">
+                  <label>Repetición</label>
+                  <input type="text" id="se-rep-${a.id}" value="${a.rep||''}" placeholder="Lunes a jueves...">
+                </div>
+                <div style="display:flex;flex-direction:column;gap:3px;grid-column:1/-1">
+                  <label>Notas de la clase</label>
+                  <input type="text" id="se-not-${a.id}" value="${(a.not||'').replace(/"/g,'&quot;')}" placeholder="Objetivos, observaciones...">
+                </div>
+              </div>
+              <div style="display:flex;gap:6px;justify-content:flex-end">
+                <button class="btn bsm" onclick="cerrarEditorHorario(${a.id})">Cancelar</button>
+                <button class="btn bsm bp" onclick="guardarEditorHorario(${a.id})">✓ Guardar cambios</button>
+              </div>
+            </div>
+          </div>`;
+        }).join('')}</div>
+      </div>`;
+    }).join('');
   }
 
-  const histHtml = hechas.length
-    ? '<div class="clist">'+hechas.map(c=>fila(c,'done')).join('')+'</div>'
-    : '<div class="empty">Aún no tiene clases completadas registradas.</div>';
-  const proxHtml = prox.length
-    ? '<div class="clist">'+prox.map(c=>fila(c,'next')).join('')+'</div>'
-    : '<div class="empty">No tiene próximas clases agendadas.</div>';
-
-  const skillsHtml = await skillsSection(k);
-
-  return '<div class="kid">'+
-    '<div class="kid-head">'+
-      '<div class="kid-name">'+escapeHtml(k.nom)+'</div>'+
-      '<div class="kid-sub">'+(k.edad?escapeHtml(k.edad):'')+'</div>'+
-      (k.niv?'<span class="badge '+nivClass(k.niv)+'">'+escapeHtml(k.niv)+'</span>':'')+
-    '</div>'+
-    '<div class="prog">'+progHtml+'</div>'+
-    skillsHtml+
-    '<div class="sec-t">📅 Próximas clases</div>'+proxHtml+
-    '<div class="divider"></div>'+
-    '<div class="sec-t">✅ Clases completadas ('+hechas.length+')</div>'+histHtml+
-  '</div>';
+  // Mini lista de hoy en card superior
+  const hl=document.getElementById('hoy-lista');
+  if(!hl)return;
+  if(clasesHoy.length){
+    hl.innerHTML=clasesHoy.map(a=>`
+      <div class="titem">
+        <span class="tpill">${fmtH(a.hora)}</span>
+        <div><div style="font-size:13px;font-weight:500;color:var(--text)">${a.nin}</div>
+        <div style="font-size:12px;color:var(--text2)">${a.niv}</div></div>
+        <span class="badge ${eb(a.est)}" style="margin-left:auto">${a.est}</span>
+      </div>`).join('');
+  } else {
+    const prox=A.filter(a=>a.fec>diaSeleccionado).sort((x,y)=>x.fec.localeCompare(y.fec)||x.hora.localeCompare(y.hora)).slice(0,4);
+    hl.innerHTML=prox.length?prox.map(a=>`
+      <div class="titem">
+        <span class="tpill" style="min-width:64px;font-size:11px">${fmt(a.fec)}</span>
+        <div><div style="font-size:13px;font-weight:500;color:var(--text)">${a.nin}</div>
+        <div style="font-size:12px;color:var(--text2)">${fmtH(a.hora)}</div></div>
+        <span class="badge ${eb(a.est)}" style="margin-left:auto">${a.est}</span>
+      </div>`).join('')
+      :'<div class="empty">Sin próximas clases</div>';
+  }
 }
 
-/* Los 3 niveles del curriculum SafeWave, con sus hitos reales por clase. */
-const NIVELES={
-  1:{nom:'Nivel 1 — Inicial',sub:'Supervivencia · Bebés y principiantes',
-     desc:'El objetivo aquí no es la técnica, sino la confianza y el amor por el agua. Muchas repeticiones, mucho juego. Si el niño ríe, vamos por buen camino.',
-     hitos:[
-       {p:20, n:'Adaptación al agua',  t:'Entra al agua con confianza, salpica y juega sin miedo'},
-       {p:40, n:'Meter cara sin miedo',t:'Moja y mete la cara completa sin resistencia'},
-       {p:60, n:'Burbujas y sumersión',t:'Sopla burbujas y se sumerge a buscar juguetes'},
-       {p:80, n:'Flotación asistida',  t:'Flota de espalda y de barriga, y patea con tabla'},
-       {p:100,n:'Llegar a la pared',   t:'Salta, se orienta, llega a la pared y flota solo'}]},
-  2:{nom:'Nivel 2 — Medio',sub:'Base técnica',
-     desc:'Ya confía en el agua. Ahora construimos la base del nado real: primero las piernas, luego los brazos, después la respiración, y al final todo junto.',
-     hitos:[
-       {p:20, n:'Patada básica',        t:'Patada de libre con piernas rectas y tobillos sueltos'},
-       {p:40, n:'Flotación sin ayuda',  t:'Flota y se desliza sin ningún apoyo'},
-       {p:60, n:'Respiración controlada',t:'Voltea la cabeza y respira al lado de forma coordinada'},
-       {p:80, n:'Desplazamiento corto', t:'Nada 10 metros de libre sin parar'},
-       {p:100,n:'Espalda básica',       t:'Nada 8 metros de espalda controlado'}]},
-  3:{nom:'Nivel 3 — Avanzado',sub:'Técnica libre y espalda',
-     desc:'El fundamento está listo. Refinamos la técnica, alargamos distancias y construimos resistencia hasta la independencia total en el agua.',
-     hitos:[
-       {p:20, n:'Nado libre completo',   t:'25 metros de libre con brazada pulida y codo alto'},
-       {p:40, n:'Espalda',               t:'25 metros de espalda continuos'},
-       {p:60, n:'Coordinación completa', t:'Respiración bilateral y cambio de estilo a mitad de largo'},
-       {p:80, n:'Resistencia',           t:'Nado continuo de 100 metros sin parar'},
-       {p:100,n:'Independencia total',   t:'50 m libre y 25 m espalda: autonomía completa en el agua'}]}
-};
-function numNivel(niv){const m=String(niv||'').match(/[123]/);return m?+m[0]:1;}
-function nivelSection(k,p){
-  const N=NIVELES[numNivel(k.niv)]; if(!N) return '';
-  const vs=[p.flo,p.resp,p.pat,p.conf,p.rsi].map(v=>Math.max(0,Math.min(100,+v||0)));
-  const pct=Math.round(vs.reduce((a,b)=>a+b,0)/vs.length);
-  if(!pct) return '';
-  // El hito actual es el ultimo alcanzado; el siguiente es lo que viene.
-  let idxAhora=-1;
-  N.hitos.forEach(function(h,i){ if(pct>=h.p) idxAhora=i; });
-  const sig=N.hitos[idxAhora+1]||null;
-  const hitos=N.hitos.map(function(h,i){
-    const cls = pct>=h.p ? (i===idxAhora?'nv-h ok now':'nv-h ok') : 'nv-h';
-    return '<div class="'+cls+'"><span class="nv-mk">'+(pct>=h.p?'✓':h.p)+'</span>'+
-      '<span class="nv-t"><b class="nv-paso">'+escapeHtml(h.n)+'</b>'+escapeHtml(h.t)+'</span></div>';
+function renderHoy(){
+  const hoy=tod();
+  const act=C.filter(c=>c.est==='Activo').length;
+  const clasesHoy=A.filter(a=>a.fec===hoy).length;
+  const cobrado=C.reduce((s,c)=>s+(+c.pag||0),0);
+  const total=C.reduce((s,c)=>s+(+c.tot||0),0);
+  const listos=P.filter(p=>p.est==='Listo para subir').length;
+
+  document.getElementById('m-hoy').innerHTML=`
+    <div class="metric"><div class="mlabel">Alumnos activos</div><div class="mval">${act}</div><div class="msub">${C.length} total incl. verano</div></div>
+    <div class="metric"><div class="mlabel">Clases hoy</div><div class="mval">${clasesHoy}</div><div class="msub">${A.filter(a=>a.fec>=hoy).length} próximas total</div></div>
+    <div class="metric"><div class="mlabel">Listos para subir</div><div class="mval">${listos}</div><div class="msub">de nivel</div></div>`;
+
+  const dias=['Dom','Lun','Mar','Mié','Jue','Vie','Sáb'];
+  document.getElementById('dia-hoy').textContent=dias[new Date().getDay()]+' '+new Date().toLocaleDateString('es',{day:'2-digit',month:'short'});
+
+  // Alertas
+  let al='';
+  const reno=C.filter(c=>c.reno&&c.reno!='');
+  if(reno.length) al+=reno.map(c=>`<div class="arow"><div class="aico aw_">↻</div><div><div style="font-size:13px;font-weight:500;color:var(--text)">Renovación — ${c.nom}</div><div style="font-size:12px;color:var(--text2)">${fmt(c.reno)}</div></div></div>`).join('');
+  const faltHor=(typeof faltantesHorario==='function')?faltantesHorario():[];
+  if(faltHor.length) al+=`<div class="arow"><div class="aico ar_">📅</div><div><div style="font-size:13px;font-weight:500;color:var(--text)">${faltHor.length} niño(s) sin clases en el calendario</div><div style="font-size:12px;color:var(--text2)">${faltHor.map(p=>p.nom+' ('+p.falta+')').join(' · ')} — <span style="cursor:pointer;text-decoration:underline;font-weight:500" onclick="completarHorarios()">Agendar ahora</span></div></div></div>`;
+  const porVencer=C.filter(c=>c.est==='Activo'&&(+c.paq-+c.us)<=2&&+c.paq>0);
+  if(porVencer.length) al+=`<div class="arow"><div class="aico aw_">⚠</div><div><div style="font-size:13px;font-weight:500;color:var(--text)">${porVencer.length} por vencer paquete</div><div style="font-size:12px;color:var(--text2)">${porVencer.map(c=>c.nom).join(', ')}</div></div></div>`;
+  const pendPago=C.filter(c=>(+c.tot||0)>(+c.pag||0)&&c.est==='Activo');
+  if(pendPago.length) al+=`<div class="arow"><div class="aico aw_">$</div><div><div style="font-size:13px;font-weight:500;color:var(--text)">Pagos pendientes</div><div style="font-size:12px;color:var(--text2)">${pendPago.map(c=>c.nom).join(' · ')}</div></div></div>`;
+  // Quién termina su paquete HOY: es el momento de hablar de renovación
+  if(typeof terminanEl==='function'){
+    const fin=terminanEl(tod());
+    if(fin.length) al=`<div class="arow"><div class="aico aw_">🏁</div><div><div style="font-size:13px;font-weight:500;color:var(--text)">Hoy termina${fin.length>1?'n':''} su paquete: ${fin.join(' · ')}</div><div style="font-size:12px;color:var(--text2)">Es el momento de hablarle${fin.length>1?'s':''} de renovar</div></div></div>`+al;
+  }
+  // Rutina del mes: avisa desde el dia 20 si quedan tareas
+  if(typeof rutPend==='function'){
+    const rp=rutPend(), dia=+tod().slice(8,10);
+    if(rp>0&&dia>=20) al+=`<div class="arow"><div class="aico aw_">🗓</div><div><div style="font-size:13px;font-weight:500;color:var(--text)">Rutina del mes: ${rp} tarea(s) sin hacer</div><div style="font-size:12px;color:var(--text2)">${RUTINA.filter(t=>!rutHecha(t.id)).map(t=>t.t).join(' · ')} — <a href="#" onclick="go('recordatorios');return false" style="color:var(--acc)">Ver rutina</a></div></div></div>`;
+  }
+  const ver=C.filter(c=>c.est==='Verano');
+  if(ver.length) al+=`<div class="arow"><div class="aico ai_">☀</div><div><div style="font-size:13px;font-weight:500;color:var(--text)">${ver.length} alumno(s) empiezan en verano</div><div style="font-size:12px;color:var(--text2)">${ver.map(c=>c.nom).join(', ')}</div></div></div>`;
+  const sinZona=C.filter(c=>c.est==='Activo'&&!c.zona);
+  if(sinZona.length) al+=`<div class="arow"><div class="aico ai_">📍</div><div><div style="font-size:13px;font-weight:500;color:var(--text)">Sin zona asignada</div><div style="font-size:12px;color:var(--text2)">${sinZona.map(c=>c.nom).join(', ')} — agrégala para optimizar horarios</div></div></div>`;
+  // Recordatorios pendientes
+  const recPend=R.filter(r=>r.est==='Pendiente');
+  if(recPend.length) al+=recPend.map(r=>`<div class="arow"><div class="aico bp_">📌</div><div><div style="font-size:13px;font-weight:500;color:var(--text)">${r.texto}</div><div style="font-size:12px;color:var(--text2)">${r.fecha?'→ '+fmt(r.fecha):'Sin fecha'} · <span style="cursor:pointer;text-decoration:underline" onclick="marcarRecHecho(${r.id})">Marcar hecho</span></div></div></div>`).join('');
+  if(!al) al='<div class="empty">Sin alertas activas</div>';
+  document.getElementById('alertas').innerHTML=al;
+
+  diaSeleccionado=hoy;
+  renderHorario();
+}
+
+// ═══ EDITOR INLINE DE HORARIO ═══
+function abrirEditorHorario(id){
+  // Cerrar cualquier otro editor abierto
+  document.querySelectorAll('[class^="sc-edit-"]').forEach(el=>{
+    if(!el.className.includes('sc-edit-'+id)) el.style.display='none';
+  });
+  document.querySelectorAll('[class^="sc-view-"]').forEach(el=>{
+    if(!el.className.includes('sc-view-'+id)) el.style.display='flex';
+  });
+  const editor=document.querySelector('.sc-edit-'+id);
+  const vista=document.querySelector('.sc-view-'+id);
+  if(!editor||!vista)return;
+  const abierto=editor.style.display!=='none';
+  editor.style.display=abierto?'none':'block';
+  vista.style.display=abierto?'flex':'none';
+}
+
+function cerrarEditorHorario(id){
+  const editor=document.querySelector('.sc-edit-'+id);
+  const vista=document.querySelector('.sc-view-'+id);
+  if(editor) editor.style.display='none';
+  if(vista) vista.style.display='flex';
+}
+
+function ajustarUsadas(nin,oldEst,newEst){
+  if(oldEst===newEst)return;
+  const c=C.find(x=>x.nom===nin);
+  if(!c)return;
+  if(newEst==='Completada'&&oldEst!=='Completada'){c.us=(+c.us||0)+1;sv(K.c,C);}
+  else if(oldEst==='Completada'&&newEst!=='Completada'){c.us=Math.max(0,(+c.us||0)-1);sv(K.c,C);}
+}
+function guardarEditorHorario(id){
+  const i=A.findIndex(x=>x.id===id);
+  if(i<0)return;
+  const hora=document.getElementById('se-hora-'+id)?.value||A[i].hora;
+  const fec=document.getElementById('se-fec-'+id)?.value||A[i].fec;
+  const est=document.getElementById('se-est-'+id)?.value||A[i].est;
+  const niv=document.getElementById('se-niv-'+id)?.value||A[i].niv;
+  const rep=document.getElementById('se-rep-'+id)?.value||'';
+  const not=document.getElementById('se-not-'+id)?.value||'';
+  const oldEst=A[i].est;
+  A[i]={...A[i],hora,fec,est,niv,rep,not};
+  ajustarUsadas(A[i].nin,oldEst,est);
+  sv(K.a,A);
+  // Si cambió la fecha, moverse al nuevo día
+  if(fec!==diaSeleccionado){
+    diaSeleccionado=fec;
+  }
+  renderHorario();
+  if(AT==='hoy') renderHoy();
+}
+
+
+function confirmDel(msg,fn){
+  document.getElementById('toastMsg').textContent=msg;
+  document.getElementById('toastYes').onclick=()=>{fn();cancelDel();};
+  document.getElementById('toast').classList.add('open');
+  setTimeout(cancelDel,8000);
+}
+function cancelDel(){document.getElementById('toast').classList.remove('open');}
+
+// ═══ ALUMNOS ═══
+function renderC(){
+  const f=document.getElementById('filtroE').value;
+  const lista=f?C.filter(c=>c.est===f):C;
+  const tb=document.getElementById('tb-c');
+  if(!lista.length){tb.innerHTML=`<tr><td colspan="15"><div class="empty">Sin alumnos.</div></td></tr>`;return;}
+  tb.innerHTML=lista.map(c=>{
+    const pk=+c.paq||0,us=+c.us||0,rest=pk-us,pct=pk?Math.round(us/pk*100):0;
+    const bc=pct>75?'#e24b4a':pct>40?'#ef9f27':'#1d9e75';
+    const debe=(+c.tot||0)-(+c.pag||0);
+    return`<tr>
+      <td><strong>${c.nom}</strong></td>
+      <td>${c.edad||'—'}</td>
+      <td><span style="font-size:12px;color:${c.zona?'var(--text)':'var(--text3)'}">${c.zona||'Sin zona'}</span></td>
+      <td><span class="badge ${nb(c.niv)}">${c.niv}</span></td>
+      <td><span class="badge ${pb(c.prog)}">${c.prog||'—'}</span></td>
+      <td style="color:var(--text2);font-size:12px">${c.hor||'—'}</td>
+      <td>${pk?pk+' cls':'—'}</td>
+      <td>${us}</td>
+      <td><div style="display:flex;align-items:center;gap:5px">
+        <span style="font-size:12px;font-weight:500;min-width:14px">${pk?rest:'—'}</span>
+        ${pk?`<div class="pbw"><div class="pb"><div class="pbf" style="width:${pct}%;background:${bc}"></div></div></div>`:''}
+      </div></td>
+      <td>
+        <div style="font-size:12px">$${+c.pag||0}</div>
+        ${debe>0?`<div style="font-size:11px;color:#a32d2d">Debe $${debe}</div>`:`<div style="font-size:11px;color:#3b6d11">Al día</div>`}
+      </td>
+      <td style="font-size:12px;color:${c.reno?'#a32d2d':'var(--text3)'}">${c.reno?fmt(c.reno):'—'}</td>
+      <td><span class="badge ${eb(c.est)}">${c.est}</span></td>
+      <td style="color:var(--text2);font-size:12px">${trunc(c.con,20)}</td>
+      <td title="${c.not||''}" style="color:var(--text2);font-size:12px">${trunc(c.not,28)}</td>
+      <td><div style="display:flex;gap:4px">
+        <button class="btn bsm" onclick="editC(${c.id})">Editar</button>
+        <button class="btn bd bsm" onclick="confirmDel('¿Eliminar a ${c.nom}?',()=>{C=C.filter(x=>x.id!==${c.id});sv(K.c,C);renderC();renderHoy()})">✕</button>
+      </div></td>
+    </tr>`;
   }).join('');
-  const ticks=N.hitos.filter(h=>h.p!==40&&h.p!==80).map(h=>'<span class="nv-tick" style="left:'+h.p+'%">'+h.p+'%</span>').join('');
-  const nombre=escapeHtml(k.nom.split(' ')[0]);
-  const ahora = idxAhora>=0
-    ? '<div class="nv-now"><b>Dónde va ahora</b>'+escapeHtml(N.hitos[idxAhora].n)+' — '+escapeHtml(N.hitos[idxAhora].t)+
-      (sig?'<br><span style="color:var(--text2)">Lo que viene: '+escapeHtml(sig.n)+'</span>':'')+'</div>'
-    : (sig?'<div class="nv-now"><b>Lo que viene</b>'+escapeHtml(sig.n)+' — '+escapeHtml(sig.t)+'</div>':'');
-  return '<div class="divider"></div><div class="sec-t">🎯 Su nivel</div>'+
-    '<div class="nivel"><div class="nv-card">'+
-      '<div class="nv-top"><span class="nv-nom">'+escapeHtml(N.nom)+'</span><span class="nv-pct">'+pct+'%</span></div>'+
-      '<div class="nv-sub">'+escapeHtml(N.sub)+'</div>'+
-      '<div class="nv-desc">'+escapeHtml(N.desc)+'</div>'+
-      '<div class="nv-track"><div class="nv-fill" data-w="'+pct+'" style="width:0%"></div></div>'+
-      '<div class="nv-ticks">'+ticks+'</div>'+
-      '<div class="nv-hitos">'+hitos+'</div>'+
-      ahora+
-    '</div></div>';
 }
 
-async function skillsSection(k){
-  const pr=await sb.from('progreso_publico').select('*').eq('cid',k.id).limit(1);
-  const p=(pr.data&&pr.data[0])||null;
-  if(!p) return '';
-  const nivelHtml=nivelSection(k,p);
-  const skills=[
-    ['Flotación',p.flo,'#1d9e75','#7ee0a8'],
-    ['Respiración',p.resp,'#378add','#7fb6f8'],
-    ['Patada',p.pat,'#7f77dd','#b9a8ff'],
-    ['Confianza',p.conf,'#ba7517','#f3c969'],
-    ['Resistencia',p.rsi,'#d4537e','#f4a3bf']
-  ];
-  const hasData = skills.some(s=>(+s[1]||0)>0) || (p.dom&&p.dom.trim()) || (p.met&&p.met.trim());
-  if(!hasData) return nivelHtml;
-  const bars=skills.map(function(s){
-    const v=Math.max(0,Math.min(100,+s[1]||0));
-    return '<div class="skill"><div class="sl"><span>'+s[0]+'</span><span class="v" style="color:'+s[3]+'">'+v+'</span></div>'+
-      '<div class="sbar"><div class="sfill" data-w="'+v+'" style="width:0%;background:'+s[2]+'"></div></div></div>';
+function resetC(){
+  document.getElementById('tC').textContent='Nuevo alumno';
+  ['c-id','c-nom','c-edad','c-zona','c-hor','c-con','c-not'].forEach(i=>document.getElementById(i).value='');
+  document.getElementById('c-niv').value='Nivel 1 — Adaptación';
+  document.getElementById('c-prog').value='Bajo';
+  document.getElementById('c-paq').value='10';
+  document.getElementById('c-us').value='0';
+  document.getElementById('c-pag').value='';
+  document.getElementById('c-tot').value='200';
+  document.getElementById('c-reno').value='';
+  document.getElementById('c-est').value='Activo';
+  document.getElementById('c-fecha').value='';
+}
+
+function editC(id){
+  const c=C.find(x=>x.id===id);if(!c)return;
+  document.getElementById('tC').textContent='Editar — '+c.nom;
+  document.getElementById('c-id').value=c.id;
+  document.getElementById('c-nom').value=c.nom;
+  document.getElementById('c-edad').value=c.edad||'';
+  document.getElementById('c-zona').value=c.zona||'';
+  document.getElementById('c-niv').value=c.niv;
+  document.getElementById('c-prog').value=c.prog||'Bajo';
+  document.getElementById('c-hor').value=c.hor||'';
+  document.getElementById('c-fecha').value=c.fecha||'';
+  document.getElementById('c-paq').value=c.paq||'10';
+  document.getElementById('c-us').value=c.us||0;
+  document.getElementById('c-pag').value=c.pag||'';
+  document.getElementById('c-tot').value=c.tot||'';
+  document.getElementById('c-reno').value=c.reno||'';
+  document.getElementById('c-est').value=c.est;
+  document.getElementById('c-con').value=c.con||'';
+  document.getElementById('c-not').value=c.not||'';
+  openM('mC');
+}
+
+function saveC(){
+  const nom=document.getElementById('c-nom').value.trim();
+  if(!nom){alert('El nombre es obligatorio');return;}
+  const id=document.getElementById('c-id').value;
+  const obj={id:id?+id:Date.now(),nom,edad:document.getElementById('c-edad').value.trim(),zona:document.getElementById('c-zona').value.trim(),niv:document.getElementById('c-niv').value,prog:document.getElementById('c-prog').value,hor:document.getElementById('c-hor').value.trim(),fecha:document.getElementById('c-fecha').value,paq:document.getElementById('c-paq').value,us:+document.getElementById('c-us').value||0,pag:+document.getElementById('c-pag').value||0,tot:+document.getElementById('c-tot').value||0,reno:document.getElementById('c-reno').value,est:document.getElementById('c-est').value,con:document.getElementById('c-con').value.trim(),not:document.getElementById('c-not').value.trim()};
+  if(id){const i=C.findIndex(x=>x.id===+id);if(i>-1){const nomViejo=C[i].nom;C[i]=obj;
+    if(nomViejo&&nomViejo!==nom){A.forEach(a=>{if(a.nin===nomViejo)a.nin=nom;});sv(K.a,A);}
+  }}else C.push(obj);
+  sv(K.c,C);closeM('mC');renderC();if(AT==='hoy')renderHoy();
+}
+
+// ═══ AGENDA ═══
+function renderA(){
+  const tot=A.length,comp=A.filter(a=>a.est==='Completada').length,canc=A.filter(a=>a.est==='Cancelada').length,pend=A.filter(a=>a.est==='Pendiente').length;
+  document.getElementById('m-a').innerHTML=`
+    <div class="metric"><div class="mlabel">Total</div><div class="mval">${tot}</div></div>
+    <div class="metric"><div class="mlabel">Completadas</div><div class="mval">${comp}</div></div>
+    <div class="metric"><div class="mlabel">Canceladas</div><div class="mval">${canc}</div></div>
+    <div class="metric"><div class="mlabel">Pendientes</div><div class="mval">${pend}</div></div>`;
+  renderHoras();
+
+  // Filtro por alumno
+  const sel=document.getElementById('filtroNin');
+  const curFiltro=sel?sel.value:'';
+  if(sel){
+    const nombres=[...new Set(A.map(a=>a.nin))].sort();
+    sel.innerHTML='<option value="">Todos los alumnos</option>'+nombres.map(n=>`<option${n===curFiltro?' selected':''}>${n}</option>`).join('');
+  }
+
+  const container=document.getElementById('agenda-cards');
+  if(!container)return;
+  const lista=curFiltro?A.filter(a=>a.nin===curFiltro):A;
+  if(!lista.length){container.innerHTML='<div class="empty">Sin clases agendadas. ¡Agrega la primera!</div>';return;}
+
+  const meses=['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];
+  const nivColor={'Nivel 1 — Adaptación':'#3b6d11','Nivel 2 — Autorrescate':'#854f0b','Nivel 3 — Fundamentos':'#185fa5','Nivel 4 — Independencia':'#3c3489'};
+
+  // Agrupar por alumno
+  const porAlumno={};
+  lista.forEach(a=>{if(!porAlumno[a.nin])porAlumno[a.nin]=[];porAlumno[a.nin].push(a);});
+  Object.values(porAlumno).forEach(arr=>arr.sort((x,y)=>x.fec.localeCompare(y.fec)||x.hora.localeCompare(y.hora)));
+
+  container.innerHTML=Object.entries(porAlumno).map(([nombre,clases])=>{
+    const alumno=C.find(c=>c.nom===nombre)||{};
+    const prox=clases.filter(a=>a.fec>=tod());
+    return`<div class="ag-alumno-group">
+      <div class="ag-alumno-header">
+        <span class="badge ${nb(alumno.niv||clases[0]?.niv)}" style="font-size:11px">${alumno.niv||clases[0]?.niv||'—'}</span>
+        <span class="ag-alumno-nombre">${nombre}</span>
+        ${alumno.zona?`<span style="font-size:11px;color:var(--text3)">📍 ${alumno.zona}</span>`:''}
+        <span style="font-size:11px;color:var(--text3)">${clases.length} clase${clases.length!==1?'s':''} · ${prox.length} próxima${prox.length!==1?'s':''}</span>
+        <button class="btn bsm bp" style="padding:3px 10px" onclick="event.stopPropagation();abrirNuevaClase('${nombre}')">+ Clase</button>
+      </div>
+      ${clases.map(a=>{
+        const d=new Date(a.fec+'T00:00:00');
+        const nc=nivColor[a.niv]||'#888780';
+        const pasada=a.fec<tod();
+        return`<div class="ag-clase-row" id="agrow-${a.id}">
+          <div class="ag-clase-vista" onclick="toggleAgEditor(${a.id})">
+            <div class="ag-nivel-bar" style="background:${nc};opacity:${pasada?0.4:1}"></div>
+            <div class="ag-fecha-bloque" style="opacity:${pasada?0.55:1}">
+              <div class="ag-fecha-dia">${d.getDate()}</div>
+              <div class="ag-fecha-mes">${meses[d.getMonth()]}</div>
+            </div>
+            <div class="ag-clase-info">
+              <div class="ag-clase-hora">${fmtH(a.hora)}<span style="font-size:11px;font-weight:400;color:var(--text3);margin-left:6px">${a.rep||''}</span></div>
+              <div class="ag-clase-meta">${a.niv}${alumno.zona?' · 📍'+alumno.zona:''}</div>
+              ${a.not?`<div class="ag-clase-not">${a.not}</div>`:''}
+            </div>
+            <span class="badge ${eb(a.est)}">${a.est}</span>
+            <span style="font-size:16px;color:var(--text3);transition:transform .2s" id="ag-chevron-${a.id}">›</span>
+          </div>
+          <!-- EDITOR INLINE -->
+          <div class="ag-editor" id="ag-editor-${a.id}">
+            <div class="ag-editor-grid">
+              <div style="display:flex;flex-direction:column;gap:3px">
+                <label>Fecha</label>
+                <input type="date" id="ag-fec-${a.id}" value="${a.fec}">
+              </div>
+              <div style="display:flex;flex-direction:column;gap:3px">
+                <label>Hora</label>
+                <input type="time" id="ag-hora-${a.id}" value="${a.hora}">
+              </div>
+              <div style="display:flex;flex-direction:column;gap:3px">
+                <label>Estado</label>
+                <select id="ag-est-${a.id}">
+                  <option${a.est==='Pendiente'?' selected':''}>Pendiente</option>
+                  <option${a.est==='Completada'?' selected':''}>Completada</option>
+                  <option${a.est==='Cancelada'?' selected':''}>Cancelada</option>
+                  <option${a.est==='Reprogramada'?' selected':''}>Reprogramada</option>
+                </select>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:3px">
+                <label>Repetición / Días</label>
+                <input type="text" id="ag-rep-${a.id}" value="${a.rep||''}" placeholder="Ej: Lunes a jueves, Martes y viernes...">
+              </div>
+              <div style="display:flex;flex-direction:column;gap:3px">
+                <label>Nivel</label>
+                <select id="ag-niv-${a.id}">
+                  <option${a.niv==='Nivel 1 — Adaptación'?' selected':''}>Nivel 1 — Adaptación</option>
+                  <option${a.niv==='Nivel 2 — Autorrescate'?' selected':''}>Nivel 2 — Autorrescate</option>
+                  <option${a.niv==='Nivel 3 — Fundamentos'?' selected':''}>Nivel 3 — Fundamentos</option>
+                  <option${a.niv==='Nivel 4 — Independencia'?' selected':''}>Nivel 4 — Independencia</option>
+                </select>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:3px">
+                <label>Instructor asignado</label>
+                <select id="ag-instr-${a.id}">
+                  <option value=""${!a.instr?' selected':''}>Sin asignar</option>
+                  ${INSTR.map(i=>`<option value="${i.id}"${a.instr===i.id?' selected':''}>${i.nombre||i.id}</option>`).join('')}
+                </select>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:3px;grid-column:1/-1">
+                <label>Notas de la clase</label>
+                <input type="text" id="ag-not-${a.id}" value="${(a.not||'').replace(/"/g,'&quot;')}" placeholder="Objetivos, observaciones...">
+              </div>
+            </div>
+            <div class="ag-editor-actions">
+              <button class="btn bsm bd" onclick="confirmDel('¿Eliminar esta clase de ${nombre}?',()=>{A=A.filter(x=>x.id!==${a.id});sv(K.a,A);renderA();renderHorario()})">🗑 Eliminar</button>
+              <button class="btn bsm" onclick="toggleAgEditor(${a.id})">Cancelar</button>
+              <button class="btn bsm bp" onclick="guardarAgEditor(${a.id})">✓ Guardar</button>
+            </div>
+          </div>
+        </div>`;
+      }).join('')}
+    </div>`;
   }).join('');
-  let pills='';
-  if(p.dom&&p.dom.trim()) pills+='<div class="pill pdom"><b>Ya domina</b>'+escapeHtml(p.dom)+'</div>';
-  if(p.met&&p.met.trim()) pills+='<div class="pill pmeta"><b>Meta actual</b>'+escapeHtml(p.met)+'</div>';
-  const nombre=escapeHtml(k.nom.split(' ')[0]);
-  return nivelHtml+
-    '<div class="divider"></div><div class="sec-t">🏊 Cómo va '+nombre+'</div>'+
-    '<div class="skills">'+bars+(pills?'<div class="pills">'+pills+'</div>':'')+'</div>';
 }
 
-function fila(c,tipo){
-  const ic=tipo==='done'?'<div class="cl-ic ic-done">✓</div>':'<div class="cl-ic ic-next">🏊</div>';
-  return '<div class="cl">'+ic+
-    '<div><div class="cl-d">'+fmtFecha(c.fec)+'</div>'+
-    '<div class="cl-h">'+fmtHora(c.hora)+(c.not?' · '+escapeHtml(c.not):'')+'</div></div></div>';
+function toggleAgEditor(id){
+  const editor=document.getElementById('ag-editor-'+id);
+  const chevron=document.getElementById('ag-chevron-'+id);
+  if(!editor)return;
+  // Cerrar todos los demás
+  document.querySelectorAll('.ag-editor.open').forEach(el=>{
+    if(el.id!=='ag-editor-'+id){
+      el.classList.remove('open');
+      const ch=document.getElementById('ag-chevron-'+el.id.replace('ag-editor-',''));
+      if(ch)ch.style.transform='';
+    }
+  });
+  const abierto=editor.classList.toggle('open');
+  if(chevron) chevron.style.transform=abierto?'rotate(90deg)':'';
 }
 
-function escapeHtml(s){return String(s||'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));}
+function guardarAgEditor(id){
+  const i=A.findIndex(x=>x.id===id);
+  if(i<0)return;
+  const oldEst=A[i].est;
+  A[i]={
+    ...A[i],
+    fec:document.getElementById('ag-fec-'+id)?.value||A[i].fec,
+    hora:document.getElementById('ag-hora-'+id)?.value||A[i].hora,
+    est:document.getElementById('ag-est-'+id)?.value||A[i].est,
+    rep:document.getElementById('ag-rep-'+id)?.value||'',
+    niv:document.getElementById('ag-niv-'+id)?.value||A[i].niv,
+    instr:document.getElementById('ag-instr-'+id)?.value||null,
+    not:document.getElementById('ag-not-'+id)?.value||'',
+  };
+  ajustarUsadas(A[i].nin,oldEst,A[i].est);
+  sv(K.a,A);
+  renderA();
+  renderHorario();
+  if(AT==='hoy')renderHoy();
+}
 
-btn.addEventListener('click',buscar);
-inp.addEventListener('keydown',e=>{if(e.key==='Enter')buscar();});
-inp.focus();
+function abrirNuevaClase(nombre){
+  fillNin('a-nin');
+  fillInstr('a-instr');
+  document.getElementById('tA').textContent='Nueva clase — '+nombre;
+  document.getElementById('a-id').value='';
+  document.getElementById('a-nin').value=nombre;
+  document.getElementById('a-fec').value=tod();
+  document.getElementById('a-hora').value='10:00';
+  document.getElementById('a-rep').value='';
+  const alumno=C.find(c=>c.nom===nombre);
+  if(alumno) document.getElementById('a-niv').value=alumno.niv||'Nivel 1 — Adaptación';
+  document.getElementById('a-est').value='Pendiente';
+  document.getElementById('a-instr').value='';
+  document.getElementById('a-not').value='';
+  openM('mA');
+}
+
+function resetA(){fillNin('a-nin');fillInstr('a-instr');document.getElementById('tA').textContent='Agendar clase';['a-id','a-rep','a-not'].forEach(i=>document.getElementById(i).value='');document.getElementById('a-fec').value=tod();document.getElementById('a-hora').value='10:00';document.getElementById('a-niv').value='Nivel 1 — Adaptación';document.getElementById('a-est').value='Pendiente';document.getElementById('a-instr').value='';}
+function editA(id){const a=A.find(x=>x.id===id);if(!a)return;fillNin('a-nin');fillInstr('a-instr');document.getElementById('tA').textContent='Editar clase — '+a.nin;document.getElementById('a-id').value=a.id;document.getElementById('a-nin').value=a.nin;document.getElementById('a-fec').value=a.fec;document.getElementById('a-hora').value=a.hora;document.getElementById('a-rep').value=a.rep||'';document.getElementById('a-niv').value=a.niv;document.getElementById('a-est').value=a.est;document.getElementById('a-instr').value=a.instr||'';document.getElementById('a-not').value=a.not||'';openM('mA');}
+function saveA(){const nin=document.getElementById('a-nin').value,fec=document.getElementById('a-fec').value;if(!nin||!fec){alert('Niño y fecha son obligatorios');return;}const id=document.getElementById('a-id').value;const obj={id:id?+id:Date.now(),nin,fec,hora:document.getElementById('a-hora').value,rep:document.getElementById('a-rep').value.trim(),niv:document.getElementById('a-niv').value,est:document.getElementById('a-est').value,instr:document.getElementById('a-instr').value||null,not:document.getElementById('a-not').value.trim()};if(id){const i=A.findIndex(x=>x.id===+id);if(i>-1)A[i]=obj;}else A.push(obj);sv(K.a,A);closeM('mA');renderA();if(AT==='hoy')renderHoy();}
+
+// ═══ LOG ═══
+function renderLog(){
+  const el=document.getElementById('log-lista');
+  if(!L.length){el.innerHTML='<div class="empty">Sin registros aún. ¡Registra tu primera clase!</div>';return;}
+  el.innerHTML=[...L].sort((a,b)=>b.fec.localeCompare(a.fec)).map(l=>`
+    <div class="logi">
+      <div class="loghd">
+        <div><span style="font-size:13px;font-weight:500;color:var(--text)">${l.nin}</span><span style="margin-left:8px" class="badge ${nb(l.niv)}">${l.niv}</span></div>
+        <div style="display:flex;align-items:center;gap:6px">
+          <span style="font-size:11px;color:var(--text3)">${fmt(l.fec)}</span>
+          <button class="btn bsm" onclick="editL(${l.id})">Editar</button>
+          <button class="btn bd bsm" onclick="confirmDel('¿Eliminar registro?',()=>{L=L.filter(x=>x.id!==${l.id});sv(K.l,L);renderLog()})">✕</button>
+        </div>
+      </div>
+      ${l.obj?`<div style="font-size:12px;color:var(--text2);margin-bottom:4px"><strong style="color:var(--text)">Objetivo:</strong> ${l.obj}</div>`:''}
+      ${l.det?`<div style="font-size:12px;color:var(--text2);line-height:1.5">${l.det}</div>`:''}
+      <div style="margin-top:6px;display:flex;flex-wrap:wrap;align-items:center;gap:6px">
+        ${l.res?`<span class="badge ${+l.res>=8?'bg_':+l.res>=5?'ba_':'br_'}">Resultado: ${l.res}/10</span>`:''}
+        ${l.dif?`<span class="badge br_">${l.dif}</span>`:''}
+        ${l.pad?`<span style="font-size:12px;color:var(--text2)">Para padres: ${l.pad}</span>`:''}
+      </div>
+    </div>`).join('');
+}
+
+function resetL(){fillNin('l-nin');document.getElementById('tL').textContent='Registrar clase';['l-id','l-obj','l-det','l-pro','l-dif','l-pad'].forEach(i=>document.getElementById(i).value='');document.getElementById('l-fec').value=tod();document.getElementById('l-niv').value='Nivel 1 — Adaptación';document.getElementById('l-res').value='';}
+function editL(id){const l=L.find(x=>x.id===id);if(!l)return;fillNin('l-nin');document.getElementById('tL').textContent='Editar registro — '+l.nin;document.getElementById('l-id').value=l.id;document.getElementById('l-nin').value=l.nin;document.getElementById('l-fec').value=l.fec;document.getElementById('l-niv').value=l.niv;document.getElementById('l-res').value=l.res||'';document.getElementById('l-obj').value=l.obj||'';document.getElementById('l-det').value=l.det||'';document.getElementById('l-pro').value=l.pro||'';document.getElementById('l-dif').value=l.dif||'';document.getElementById('l-pad').value=l.pad||'';openM('mL');}
+// ═══ HORARIOS SIEMPRE COMPLETOS ═══
+// Lee el texto del horario del alumno (ej: "Mar 11:00 / Jue 11:00", "Lun, Jue 18:45")
+function parseHor(hor){
+  if(!hor)return[];
+  const D={'lun':1,'mar':2,'mie':3,'mié':3,'jue':4,'vie':5,'sab':6,'sáb':6,'dom':0};
+  const out=[];
+  String(hor).split('/').forEach(seg=>{
+    const t=seg.match(/(\d{1,2}):(\d{2})/);
+    if(!t)return;
+    const hora=('0'+t[1]).slice(-2)+':'+t[2];
+    const s=seg.toLowerCase();
+    Object.keys(D).forEach(k=>{ if(new RegExp('\\b'+k).test(s)) out.push({wd:D[k]===0?0:D[k]-0,hora}); });
+  });
+  // quitar duplicados (dia+hora)
+  return out.filter((v,i,a)=>a.findIndex(x=>x.wd===v.wd&&x.hora===v.hora)===i);
+}
+// Cuántas clases futuras pendientes tiene un niño
+// Solo cuentan las clases que REALMENTE se van a dar (Pendiente).
+// Reprogramada/Cancelada no cuentan: hay que reponerlas en otra fecha.
+function futurasDe(nom){const h=tod();return A.filter(a=>a.nin===nom&&a.fec>=h&&(a.est==='Pendiente'||!a.est)).length;}
+// Diagnóstico: quién tiene clases por tomar pero le faltan en el calendario
+function faltantesHorario(){
+  const MIN_SIN_PAQ=4; // niños con paquete por confirmar: mantener 4 clases por delante
+  return C.filter(c=>c.est==='Activo').map(c=>{
+    const paq=+c.paq||0,us=+c.us||0,rest=paq-us;
+    const fut=futurasDe(c.nom);
+    // Paquete por confirmar: igual debe verse en el horario para poder marcarlo
+    if(paq<=0){const f=MIN_SIN_PAQ-fut;return f>0?{nom:c.nom,falta:f,hor:c.hor,slots:parseHor(c.hor),niv:c.niv,sinPaq:true}:null;}
+    if(rest<=0)return null;
+    const falt=rest-fut;
+    return falt>0?{nom:c.nom,falta:falt,hor:c.hor,slots:parseHor(c.hor),niv:c.niv}:null;
+  }).filter(Boolean);
+}
+// Rellena el calendario de todos los que estén cortos
+function completarHorarios(silencioso){
+  const pend=faltantesHorario();
+  if(!pend.length){if(!silencioso)alert('✅ Todos los niños ya tienen sus clases agendadas.');return 0;}
+  const sinHor=pend.filter(p=>!p.slots.length);
+  const conHor=pend.filter(p=>p.slots.length);
+  if(!conHor.length){if(!silencioso)alert('⚠️ Estos niños necesitan un horario definido (día y hora) en su ficha:\n\n'+sinHor.map(p=>'• '+p.nom+' — "'+(p.hor||'sin horario')+'"').join('\n'));return 0;}
+  let total=0;
+  conHor.forEach(p=>{
+    const ocupado=new Set(A.filter(a=>a.nin===p.nom).map(a=>a.fec+' '+a.hora));
+    let ult=A.filter(a=>a.nin===p.nom).reduce((m,a)=>a.fec>m?a.fec:m,tod());
+    const cur=new Date(ult+'T00:00:00');cur.setDate(cur.getDate()+1);
+    const dias=['Dom','Lun','Mar','Mié','Jue','Vie','Sáb'];
+    let n=0,guard=0;
+    while(n<p.falta&&guard++<500){
+      const s=p.slots.find(x=>x.wd===cur.getDay());
+      if(s){
+        const fec=cur.toISOString().slice(0,10);
+        if(!ocupado.has(fec+' '+s.hora)){
+          A.push({id:Date.now()+Math.floor(Math.random()*100000)+n,nin:p.nom,fec,hora:s.hora,rep:dias[cur.getDay()],niv:p.niv||'Nivel 1 — Adaptación',est:'Pendiente',not:''});
+          ocupado.add(fec+' '+s.hora);n++;total++;
+        }
+      }
+      cur.setDate(cur.getDate()+1);
+    }
+  });
+  sv(K.a,A);renderHorario&&renderHorario();renderA&&renderA();if(AT==='hoy')renderHoy();
+  if(silencioso){
+    if(total&&typeof syncFlash==='function')syncFlash('Horarios repuestos: '+total+' clase(s) para '+conHor.length+' niño(s)');
+    return total;
+  }
+  let msg='✅ Se agendaron '+total+' clases para '+conHor.length+' niño(s).';
+  if(sinHor.length)msg+='\n\n⚠️ Sin horario definido (agrégalo en su ficha):\n'+sinHor.map(p=>'• '+p.nom).join('\n');
+  alert(msg);
+  return total;
+}
+// ═══ RECORDATORIOS PARA PAPÁS ═══
+const RC_DIAS=['domingo','lunes','martes','miércoles','jueves','viernes','sábado'];
+const RC_MES=['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+function resetRecord(){
+  const d=new Date();d.setDate(d.getDate()+1);
+  document.getElementById('rc-fec').value=d.toISOString().slice(0,10);
+  document.getElementById('rc-cuando').value='manana';
+  renderRecord();
+}
+function msgRecord(a,cuando){
+  const d=new Date(a.fec+'T00:00:00');
+  const cu=cuando==='hoy'?'hoy':'mañana';
+  const fecha=RC_DIAS[d.getDay()]+' '+d.getDate()+' de '+RC_MES[d.getMonth()];
+  return '¡Hola! 🌊 Recordatorio de SafeWave Academy: '+a.nin+' tiene su clase de natación '+cu+' '+fecha+' a las '+fmtH(a.hora)+'. ¡Nos vemos! 💙';
+}
+function renderRecord(){
+  const fec=document.getElementById('rc-fec').value;
+  const cuando=document.getElementById('rc-cuando').value;
+  const cl=A.filter(a=>a.fec===fec&&a.est==='Pendiente').sort((a,b)=>(a.hora||'').localeCompare(b.hora||''));
+  const el=document.getElementById('rc-lista');
+  if(!cl.length){el.innerHTML='<div class="empty" style="padding:16px">Sin clases pendientes ese día.</div>';return;}
+  el.innerHTML='<div style="font-size:12px;color:var(--text2);margin-bottom:8px">'+cl.length+' clase(s) · toca 📋 para copiar y pegar en WhatsApp</div>'+
+   cl.map(function(a,i){
+    const c=C.find(x=>x.nom===a.nin)||{};
+    return '<div style="border:0.5px solid var(--border);border-radius:var(--r);padding:10px 12px;margin-bottom:8px">'+
+      '<div style="display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:6px">'+
+        '<div><b>'+a.nin+'</b> <span style="color:var(--text2);font-size:12px">· '+fmtH(a.hora)+(c.con?' · '+c.con:'')+'</span></div>'+
+        '<button class="btn bsm" onclick="copiarRecord('+i+')">📋 Copiar</button></div>'+
+      '<div id="rc-msg-'+i+'" style="font-size:12px;color:var(--text2);white-space:pre-wrap">'+msgRecord(a,cuando)+'</div></div>';
+   }).join('');
+}
+function copiarRecord(i){
+  const t=document.getElementById('rc-msg-'+i).textContent;
+  navigator.clipboard.writeText(t).then(function(){syncFlash('Mensaje copiado');});
+}
+function copiarTodosRecord(){
+  const els=Array.prototype.slice.call(document.querySelectorAll('[id^="rc-msg-"]'));
+  if(!els.length){alert('No hay mensajes que copiar.');return;}
+  navigator.clipboard.writeText(els.map(function(e){return e.textContent;}).join('\n\n———\n\n'))
+    .then(function(){syncFlash(els.length+' mensajes copiados');});
+}
+// ═══ RENOVACIÓN DE PAQUETES ═══
+function paquetesDe(nom){return (PQ||[]).filter(p=>p.nin===nom).length;}
+function resetRen(){fillNin('rn-nin');document.getElementById('rn-fec').value=tod();document.getElementById('rn-clases').value='10';document.getElementById('rn-monto').value='';document.getElementById('rn-met').value='Transferencia';document.getElementById('rn-nota').value='';}
+function saveRen(){
+  const nin=document.getElementById('rn-nin').value,fec=document.getElementById('rn-fec').value;
+  const clases=+document.getElementById('rn-clases').value||0,monto=+document.getElementById('rn-monto').value||0;
+  if(!nin||!fec){alert('Alumno y fecha son obligatorios');return;}
+  const c=C.find(x=>x.nom===nin);
+  if(!c){alert('No encontré a ese alumno');return;}
+  const num=paquetesDe(nin)+1;
+  PQ.push({id:Date.now(),nin,fec,clases,monto,num,nota:document.getElementById('rn-nota').value.trim()});
+  sv(K.paq,PQ);
+  c.paq=String(clases);c.us=0;c.reno=fec;c.est='Activo';
+  if(monto>0){c.pag=monto;c.tot=monto;}
+  sv(K.c,C);
+  if(monto>0){PG.push({id:Date.now()+1,nin,fec,monto,met:document.getElementById('rn-met').value,nota:'Renovación paquete '+(clases||'?')+' clases'});sv(K.pagos,PG);}
+  const nuevas=completarHorarios(true);
+  closeM('mRen');renderC&&renderC();if(AT==='hoy')renderHoy();if(AT==='ingresos')renderIng();
+  alert('✅ '+nin+' renovó su paquete n.º '+num+(clases?' ('+clases+' clases)':' (por confirmar)')+
+        (monto>0?'\n💵 Pago registrado: $'+monto:'')+
+        (nuevas?'\n📅 Se agendaron '+nuevas+' clases':''));
+}
+function resetPago(){fillNin('pg-nin');document.getElementById('pg-fec').value=tod();document.getElementById('pg-monto').value='';document.getElementById('pg-met').value='Transferencia';document.getElementById('pg-nota').value='';}
+function savePago(){
+  const nin=document.getElementById('pg-nin').value,fec=document.getElementById('pg-fec').value,monto=+document.getElementById('pg-monto').value||0;
+  if(!nin||!fec||monto<=0){alert('Alumno, fecha y monto son obligatorios');return;}
+  const obj={id:Date.now(),nin,fec,monto,met:document.getElementById('pg-met').value,nota:document.getElementById('pg-nota').value.trim()};
+  PG.push(obj);sv(K.pagos,PG);
+  const c=C.find(x=>x.nom===nin);if(c){c.pag=(+c.pag||0)+monto;sv(K.c,C);}
+  closeM('mPago');if(typeof renderIng==='function'&&AT==='ingresos')renderIng();
+  if(typeof syncFlash==='function')syncFlash('Pago registrado: $'+monto);
+}
+function saveL(){const nin=document.getElementById('l-nin').value,fec=document.getElementById('l-fec').value;if(!nin||!fec){alert('Niño y fecha son obligatorios');return;}const id=document.getElementById('l-id').value;const obj={id:id?+id:Date.now(),nin,fec,niv:document.getElementById('l-niv').value,res:document.getElementById('l-res').value,obj:document.getElementById('l-obj').value.trim(),det:document.getElementById('l-det').value.trim(),pro:document.getElementById('l-pro').value.trim(),dif:document.getElementById('l-dif').value.trim(),pad:document.getElementById('l-pad').value.trim()};if(id){const i=L.findIndex(x=>x.id===+id);if(i>-1)L[i]=obj;}else L.push(obj);sv(K.l,L);closeM('mL');renderLog();if(!id){const c=C.find(x=>x.nom===nin);if(c){c.us=(+c.us||0)+1;sv(K.c,C);}}}
+
+// ═══ PROGRESO ═══
+function renderProg(){
+  const tb=document.getElementById('tb-p');
+  if(!C.length){tb.innerHTML=`<tr><td colspan="8"><div class="empty">Sin alumnos</div></td></tr>`;return;}
+  tb.innerHTML=C.map(c=>{const p=P.find(x=>x.cid===c.id)||{};const comp=L.filter(l=>l.nin===c.nom).length;
+    return`<tr><td><strong>${c.nom}</strong></td><td><span class="badge ${nb(c.niv)}">${c.niv}</span></td><td>${comp} registros</td><td>${p.dom||'—'}</td><td>${p.deb||'—'}</td><td style="font-size:12px;color:var(--text2)">${p.met||'—'}</td><td><span class="badge ${eb(p.est||'En progreso')}">${p.est||'En progreso'}</span></td><td><div style="display:flex;gap:4px"><button class="btn bsm" onclick="openProg(${c.id})">Editar</button><button class="btn bd bsm" onclick="confirmDel('¿Eliminar progreso de ${c.nom}?',()=>{P=P.filter(x=>x.cid!==${c.id});sv(K.p,P);renderProg()})">✕</button></div></td></tr>`;
+  }).join('');
+  const wrap=document.getElementById('radar-wrap');const bcs=['#378add','#1d9e75','#7f77dd','#d85a30','#ef9f27'];const sks=['flo','resp','pat','conf','rsi'];const skl=['Flotación','Respiración','Patada','Confianza','Resistencia'];
+  wrap.innerHTML='';
+  C.forEach((c,si)=>{const p=P.find(x=>x.cid===c.id)||{};const d=document.createElement('div');d.className='sradar';d.innerHTML=`<div style="font-size:13px;font-weight:500;margin-bottom:9px;color:var(--text)">${c.nom} <span class="badge ${nb(c.niv)}" style="font-size:10px">${c.niv.split('—')[0].trim()}</span></div>`+sks.map((sk,i)=>`<div class="sbrow"><span class="sblbl">${skl[i]}</span><div class="sbbg"><div class="sbf" style="width:${p[sk]||0}%;background:${bcs[si%5]}"></div></div><span style="font-size:11px;color:var(--text3);min-width:28px;text-align:right">${p[sk]||0}%</span></div>`).join('');wrap.appendChild(d);});
+}
+
+function openProg(id){const c=C.find(x=>x.id===id);if(!c)return;const p=P.find(x=>x.cid===id)||{};document.getElementById('p-cid').value=id;document.getElementById('p-dom').value=p.dom||'';document.getElementById('p-deb').value=p.deb||'';document.getElementById('p-met').value=p.met||'';document.getElementById('p-est').value=p.est||'En progreso';document.getElementById('p-flo').value=p.flo||50;document.getElementById('p-resp').value=p.resp||50;document.getElementById('p-pat').value=p.pat||50;document.getElementById('p-conf').value=p.conf||50;document.getElementById('p-rsi').value=p.rsi||50;
+document.getElementById('p-niv').value=c.niv||'Nivel 1 — Adaptación';avisoNivel();openM('mP');}
+// ═══ NIVEL DESDE PROGRESO ═══
+const NIVS=['Nivel 1 — Adaptación','Nivel 3 — Fundamentos','Nivel 4 — Independencia'];
+function subirNivel(){
+  const s=document.getElementById('p-niv'),i=NIVS.indexOf(s.value);
+  if(i<0||i>=NIVS.length-1){alert('Ya está en el nivel más alto.');return;}
+  s.value=NIVS[i+1];avisoNivel();
+}
+function avisoNivel(){
+  const el=document.getElementById('p-nivaviso');if(!el)return;
+  const c=C.find(x=>x.id===+document.getElementById('p-cid').value);
+  const nuevo=document.getElementById('p-niv').value;
+  const est=document.getElementById('p-est').value;
+  if(c&&c.niv!==nuevo){el.innerHTML='<span style="color:var(--acc)">Cambiará de <b>'+(c.niv||'—')+'</b> a <b>'+nuevo+'</b> al guardar. Se actualiza también en el portal de padres.</span>';}
+  else if(est==='Listo para subir'){el.textContent='Está marcado como "Listo para subir" — puedes pasarlo de nivel con el botón.';}
+  else el.textContent='';
+}
+function saveP(){const cid=+document.getElementById('p-cid').value;const obj={cid,dom:document.getElementById('p-dom').value.trim(),deb:document.getElementById('p-deb').value.trim(),met:document.getElementById('p-met').value.trim(),est:document.getElementById('p-est').value,flo:+document.getElementById('p-flo').value||0,resp:+document.getElementById('p-resp').value||0,pat:+document.getElementById('p-pat').value||0,conf:+document.getElementById('p-conf').value||0,rsi:+document.getElementById('p-rsi').value||0};const i=P.findIndex(x=>x.cid===cid);if(i>-1)P[i]=obj;else P.push(obj);sv(K.p,P);
+// El nivel vive en la ficha del alumno: se guarda ahí y en sus clases futuras.
+const nuevo=document.getElementById('p-niv').value;
+const c=C.find(x=>x.id===cid);let subio=null;
+if(c&&nuevo&&c.niv!==nuevo){
+  subio=(c.niv||'—')+' → '+nuevo;c.niv=nuevo;sv(K.c,C);
+  const h=tod();A.forEach(a=>{if(a.nin===c.nom&&a.fec>=h&&a.est==='Pendiente')a.niv=nuevo;});sv(K.a,A);
+  renderC&&renderC();renderHorario&&renderHorario();
+}
+closeM('mP');renderProg();if(AT==='hoy')renderHoy();
+if(subio)alert('🎉 '+c.nom+' cambió de nivel\n\n'+subio+'\n\nYa se ve en el portal de padres.');}
+
+// ═══ INGRESOS ═══
+let ic=null;
+function renderIng(){
+  // Cobrado junta las DOS fuentes sin contar doble:
+  // el libro de pagos (con fecha) y lo anotado en la ficha del alumno.
+  // Para cada alumno vale el mayor de los dos, así nunca se pierde nada.
+  const libro={};
+  (PG||[]).forEach(p=>{libro[p.nin]=(libro[p.nin]||0)+(+p.monto||0);});
+  const sinFicha=Object.keys(libro).filter(n=>!C.some(c=>c.nom===n))
+                       .reduce((s,n)=>s+libro[n],0);
+  const cobrado=C.reduce((s,c)=>s+Math.max(libro[c.nom]||0,+c.pag||0),0)+sinFicha;
+  const pend=C.reduce((s,c)=>s+Math.max(0,(+c.tot||0)-(+c.pag||0)),0);
+  const total=cobrado+pend;
+  const conMonto=(PQ||[]).filter(p=>(+p.monto||0)>0);
+  const prom=conMonto.length?Math.round(conMonto.reduce((s,p)=>s+(+p.monto||0),0)/conMonto.length):0;
+  document.getElementById('m-i').innerHTML=`<div class="metric"><div class="mlabel">Total facturado</div><div class="mval">$${total}</div></div><div class="metric"><div class="mlabel">Cobrado</div><div class="mval">$${cobrado}</div></div><div class="metric"><div class="mlabel">Por cobrar</div><div class="mval">$${pend}</div><div class="msub">${C.filter(c=>(+c.tot||0)>(+c.pag||0)).length} cliente(s)</div></div><div class="metric"><div class="mlabel">Prom. paquete</div><div class="mval">$${prom}</div></div>`;
+  const MES_=['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];
+  const porMes={};(PG||[]).forEach(p=>{const k=(p.fec||'').slice(0,7);if(k)porMes[k]=(porMes[k]||0)+(+p.monto||0);});
+  const kMes=Object.keys(porMes).sort().reverse();
+  const emes=document.getElementById('ingmes');
+  // Lo que está en las fichas pero no en el libro no tiene fecha: se muestra aparte
+  const conFecha=Object.values(porMes).reduce((s,v)=>s+v,0);
+  const sinFecha=Math.max(0,cobrado-conFecha);
+  if(emes)emes.innerHTML=(kMes.length?kMes.map(k=>{const a=k.split('-');return`<div class="irow"><span>${MES_[+a[1]-1]} ${a[0]}</span><span></span><span style="font-weight:500">$${porMes[k].toLocaleString()}</span></div>`}).join(''):'')
+    +(sinFecha>0?`<div class="irow" style="color:var(--warn,#a8650a)"><span>Sin fecha asignada</span><span style="font-size:11px">de las fichas de alumnos</span><span style="font-weight:500">$${Math.round(sinFecha).toLocaleString()}</span></div>`:'')
+    +`<div class="irow" style="border-top:1px solid var(--border);font-weight:600"><span>Total cobrado</span><span></span><span>$${Math.round(cobrado).toLocaleString()}</span></div>`
+    +(sinFecha>0?'<div style="font-size:11.5px;color:var(--text2);padding:8px 2px 2px;line-height:1.5">Para que los taxes queden por mes, hay que ponerle fecha a esos pagos. Usa 💵 Registrar pago con la fecha real, o pídeme que los reparta.</div>':'');
+  // Paquetes vendidos por mes
+  const pqMes={};(PQ||[]).forEach(p=>{const k=(p.fec||'').slice(0,7);if(k){pqMes[k]=pqMes[k]||{n:0,$:0};pqMes[k].n++;pqMes[k].$+=(+p.monto||0);}});
+  const kPq=Object.keys(pqMes).sort().reverse();
+  const epm=document.getElementById('paqmes');
+  if(epm)epm.innerHTML=kPq.length?kPq.map(k=>{const a=k.split('-');return`<div class="irow"><span>${MES_[+a[1]-1]} ${a[0]}</span><span>${pqMes[k].n} paquete(s)</span><span style="color:var(--text2)">$${pqMes[k].$.toLocaleString()}</span></div>`}).join('')+`<div class="irow" style="border-top:1px solid var(--border);font-weight:600"><span>Total</span><span>${(PQ||[]).length} paquete(s)</span><span>$${(PQ||[]).reduce((s,p)=>s+(+p.monto||0),0).toLocaleString()}</span></div>`:'<div class="empty" style="padding:12px">Aún sin paquetes registrados. Usa el botón 🔄 Renovar paquete.</div>';
+  // Paquetes por alumno (fidelidad)
+  const pqNin={};(PQ||[]).forEach(p=>{pqNin[p.nin]=(pqNin[p.nin]||0)+1;});
+  const kNin=Object.keys(pqNin).sort((a,b)=>pqNin[b]-pqNin[a]||a.localeCompare(b));
+  const epn=document.getElementById('paqnino');
+  if(epn)epn.innerHTML=kNin.length?kNin.map(n=>`<div class="irow"><span>${n}</span><span class="badge ${pqNin[n]>=3?'bg_':pqNin[n]===2?'bb_':'ba_'}">${pqNin[n]} paquete${pqNin[n]>1?'s':''}</span><span style="color:var(--text2)">$${(PQ||[]).filter(p=>p.nin===n).reduce((s,p)=>s+(+p.monto||0),0).toLocaleString()}</span></div>`).join(''):'<div class="empty" style="padding:12px">Aún sin registros</div>';
+  const cnt={5:0,8:0,10:0,12:0};C.forEach(c=>{if(cnt[+c.paq]!==undefined)cnt[+c.paq]++;});
+  document.getElementById('paquetes').innerHTML=`<div class="irow"><span>5 clases — $190</span><span>${cnt[5]} vendidos</span><span style="color:var(--text2)">$${cnt[5]*190}</span></div><div class="irow"><span>10 clases — Paquete 365</span><span>${cnt[10]} vendidos</span><span style="color:var(--text2)">$${cnt[10]*200}</span></div><div class="irow"><span>8 clases</span><span>${cnt[8]} vendidos</span><span style="color:var(--text2)">$${cnt[8]*160}</span></div><div class="irow"><span>12 clases</span><span>${cnt[12]} vendidos</span><span style="color:var(--text2)">$${cnt[12]*240}</span></div><div class="irow" style="border-top:1px solid var(--border);font-weight:500"><span>Total facturado</span><span></span><span>$${total}</span></div>`;
+  document.getElementById('cobros').innerHTML=C.length?C.map(c=>{const d=(+c.tot||0)-(+c.pag||0);return`<div class="irow"><span>${c.nom}</span><span class="badge ${d>0?'br_':'bg_'}">${d>0?'Debe $'+d:'Pagado'}</span><span>$${+c.tot||0}</span></div>`}).join(''):'<div class="empty">Sin alumnos</div>';
+  const isDk=matchMedia('(prefers-color-scheme:dark)').matches;const ctx=document.getElementById('incomeChart');if(ic){ic.destroy();ic=null;}const cdata=C.filter(c=>+c.tot>0);if(!cdata.length)return;
+  ic=new Chart(ctx,{type:'bar',data:{labels:cdata.map(c=>c.nom.split(' ')[0]),datasets:[{label:'Cobrado',data:cdata.map(c=>+c.pag||0),backgroundColor:isDk?'#0f6e56':'#1d9e75',borderRadius:4},{label:'Pendiente',data:cdata.map(c=>Math.max(0,(+c.tot||0)-(+c.pag||0))),backgroundColor:isDk?'#412402':'#faeeda',borderRadius:4}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:true,position:'top',labels:{color:'#888780',font:{size:11},boxWidth:10}}},scales:{x:{stacked:true,grid:{color:'rgba(0,0,0,0.04)'},ticks:{color:'#888780',font:{size:11}}},y:{stacked:true,grid:{color:'rgba(0,0,0,0.04)'},ticks:{color:'#888780',font:{size:11},callback:v=>'$'+v},beginAtZero:true}}}});
+}
+
+// ═══════════════════════════════════════════
+//  OPTIMIZADOR DE HORARIOS — IA
+// ═══════════════════════════════════════════
+let lastOptResult = null;
+
+async function runOptimizer(){
+  const btn=document.getElementById('opt-btn');
+  const loading=document.getElementById('opt-loading');
+  const result=document.getElementById('opt-result');
+  const msgs=['Analizando alumnos, zonas y disponibilidad...','Calculando agrupaciones por zona...','Buscando la estrategia más eficiente...','Generando horario optimizado...'];
+  let mi=0;
+  btn.disabled=true;
+  loading.classList.add('show');
+  result.classList.remove('show');
+
+  const msgEl=document.getElementById('opt-loading-msg');
+  const interval=setInterval(()=>{mi=(mi+1)%msgs.length;msgEl.textContent=msgs[mi];},1800);
+
+  // Recopilar datos
+  const diasSel=Array.from(document.getElementById('opt-dias').selectedOptions).map(o=>o.value);
+  const hini=document.getElementById('opt-hinicio').value;
+  const hfin=document.getElementById('opt-hfin').value;
+  const dur=document.getElementById('opt-duracion').value;
+  const prio=document.getElementById('opt-prioridad').value;
+  const contexto=document.getElementById('opt-contexto').value.trim();
+
+  const alumnosActivos=C.filter(c=>c.est==='Activo'||c.est==='Verano');
+  const alumnosStr=alumnosActivos.map(c=>`- ${c.nom} (${c.edad||'edad nc'}) | Zona: ${c.zona||'sin zona'} | Nivel: ${c.niv} | Horario actual: ${c.hor||'flexible'} | Progreso: ${c.prog} | Notas: ${c.not||'ninguna'}`).join('\n');
+
+  const prompt=`Eres un experto en optimización de horarios para instructores de natación infantil privada. 
+
+DATOS DE LA ACADEMIA:
+Alumnos activos:
+${alumnosStr}
+
+DISPONIBILIDAD DEL INSTRUCTOR:
+- Días: ${diasSel.join(', ')}
+- Horario: ${hini} a ${hfin}
+- Duración por clase: ${dur} minutos
+- Prioridad de optimización: ${prio==='zona'?'Agrupar por zona (minimizar traslados)':prio==='nivel'?'Agrupar por nivel pedagógico':'Mixto — equilibrio entre zona y nivel'}
+${contexto?`- Contexto adicional: ${contexto}`:''}
+
+TAREA:
+Analiza los datos y genera una estrategia de horario óptima. Tu respuesta debe incluir:
+
+1. **HORARIO SEMANAL PROPUESTO**: Un horario detallado día por día con hora, alumno y justificación.
+2. **AGRUPACIONES INTELIGENTES**: Qué alumnos agrupar por zona o por nivel y por qué.
+3. **BENEFICIOS CLAVE**: Qué tiempo/traslados se ahorran vs el horario actual.
+4. **ALERTAS Y RECOMENDACIONES**: Conflictos detectados, alumnos sin zona asignada, sugerencias adicionales.
+
+Sé específico, práctico y conciso. El instructor es una persona ocupada que necesita recomendaciones claras y accionables. Responde en español.`;
+
+  try {
+    const resp=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        model:'claude-sonnet-4-20250514',
+        max_tokens:1500,
+        messages:[{role:'user',content:prompt}]
+      })
+    });
+    const data=await resp.json();
+    const text=data.content?.filter(b=>b.type==='text').map(b=>b.text).join('')||'No se pudo generar la estrategia.';
+    lastOptResult=text;
+    clearInterval(interval);
+    loading.classList.remove('show');
+    result.classList.add('show');
+    renderOptResult(text);
+  } catch(e){
+    clearInterval(interval);
+    loading.classList.remove('show');
+    document.getElementById('opt-output').innerHTML=`<div style="padding:1rem;color:#a32d2d;font-size:13px">Error al conectar con la IA. Verifica tu conexión e intenta de nuevo.</div>`;
+    result.classList.add('show');
+  }
+  btn.disabled=false;
+}
+
+function renderOptResult(text){
+  // Convertir markdown básico a HTML
+  let html=text
+    .replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>')
+    .replace(/^#{1,3}\s+(.+)$/gm,'<div style="font-size:14px;font-weight:600;color:var(--text);margin:14px 0 6px">$1</div>')
+    .replace(/^-\s+(.+)$/gm,'<div style="display:flex;gap:6px;margin-bottom:4px"><span style="color:var(--text3)">·</span><span>$1</span></div>')
+    .replace(/^\d+\.\s+(.+)$/gm,'<div style="display:flex;gap:6px;margin-bottom:6px;font-weight:500"><span style="color:var(--ocean);min-width:16px">$1</span></div>')
+    .replace(/\n\n/g,'<div style="margin-bottom:10px"></div>')
+    .replace(/\n/g,'<br>');
+
+  document.getElementById('opt-output').innerHTML=`
+    <div class="opt-analysis" style="margin-bottom:14px">
+      <strong>💡 Estrategia generada</strong> — basada en ${C.filter(c=>c.est==='Activo').length} alumnos activos + ${C.filter(c=>c.est==='Verano').length} de verano
+    </div>
+    <div style="font-size:13px;color:var(--text2);line-height:1.8">${html}</div>`;
+}
+
+function applySchedule(){
+  alert('💡 Tip: Copia las clases sugeridas y agrégalas manualmente en la sección Agenda con el botón "+ Agendar clase". En próximas versiones esto se hará automáticamente.');
+}
+
+
+
+// ═══ NOTAS DEL MES ═══
+function keyNotasMes(){const d=new Date();return K.n+'_'+d.getFullYear()+'_'+(d.getMonth()+1);}
+function guardarNotasMes(){const v=document.getElementById('notas-mes-input').value;localStorage.setItem(keyNotasMes(),v);document.getElementById('notas-mes-label').textContent='Guardado ✓';}
+function cargarNotasMes(){const el=document.getElementById('notas-mes-input');if(!el)return;const v=localStorage.getItem(keyNotasMes())||'';el.value=v;const meses=['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];const d=new Date();document.getElementById('notas-mes-label').textContent=meses[d.getMonth()]+' '+d.getFullYear();}
+
+// ═══ RECORDATORIOS ═══
+// ═══ RUTINA DEL MES ═══
+// Tareas fijas que se repiten. Viven en la tabla de recordatorios con ids
+// reservados, y el campo fecha guarda el mes en que se marcaron hechas.
+const RUTINA=[
+  {id:60001,t:'Actualizar el progreso de cada niño'},
+  {id:60002,t:'Revisar las renovaciones que vienen'},
+  {id:60003,t:'Revisar los niveles de cada alumno'},
+  {id:60004,t:'Confirmar que todos los papás tengan el portal de padres'},
+  {id:60005,t:'Recordarles el portal de padres (cada 30 días)'},
+  {id:60006,t:'Mandar a todos los papás la cláusula de natación'},
+  {id:60007,t:'Nunca dejar pasar el primer pago'}
+];
+function mesAct(){return tod().slice(0,7);}
+function rutHecha(id){const r=R.find(x=>+x.id===id);return !!(r&&r.fecha===mesAct());}
+function rutPend(){return RUTINA.filter(t=>!rutHecha(t.id)).length;}
+function toggleRut(id){
+  const m=mesAct(),i=R.findIndex(x=>+x.id===id),t=RUTINA.find(x=>x.id===id);
+  const hecha=rutHecha(id);
+  if(i<0)R.push({id,texto:t.t,fecha:hecha?'':m,prioridad:'Rutina',est:'Pendiente'});
+  else R[i]={...R[i],texto:t.t,fecha:hecha?'':m,prioridad:'Rutina',est:'Pendiente'};
+  sv(K.r,R);renderRut();if(AT==='hoy')renderHoy();
+}
+function renderRut(){
+  const el=document.getElementById('rut-lista');if(!el)return;
+  const hechas=RUTINA.length-rutPend();
+  const p=document.getElementById('rut-prog');
+  if(p)p.textContent=hechas+' de '+RUTINA.length+' listas';
+  el.innerHTML=RUTINA.map(function(t){
+    const ok=rutHecha(t.id);
+    return '<label style="display:flex;align-items:center;gap:10px;padding:9px 2px;border-bottom:1px solid var(--border);cursor:pointer">'+
+      '<input type="checkbox" '+(ok?'checked':'')+' onchange="toggleRut('+t.id+')" style="width:17px;height:17px;flex:none;cursor:pointer">'+
+      '<span style="font-size:14px;text-transform:none;letter-spacing:normal;color:var(--text);'+(ok?'opacity:.45;text-decoration:line-through':'')+'">'+t.t+'</span></label>';
+  }).join('')+'<div style="font-size:11.5px;color:var(--text2);padding:9px 2px 0">Se reinicia sola el primer día de cada mes.</div>';
+}
+function renderRec(){
+  renderRut();
+  const lista=document.getElementById('rec-lista');
+  if(!lista)return;
+  const R_=R.filter(r=>r.prioridad!=='Rutina');
+  if(!R_.length){lista.innerHTML='<div class="empty">Sin recordatorios. Agrega uno con el botón de arriba.</div>';return;}
+  const sorted=[...R_].sort((a,b)=>{
+    if(a.est==='Pendiente'&&b.est!=='Pendiente')return-1;
+    if(a.est!=='Pendiente'&&b.est==='Pendiente')return 1;
+    if(a.prioridad==='Alta'&&b.prioridad!=='Alta')return-1;
+    if(a.prioridad!=='Alta'&&b.prioridad==='Alta')return 1;
+    return(a.fecha||'zzz').localeCompare(b.fecha||'zzz');
+  });
+  lista.innerHTML=`<div class="tscroll"><table><thead><tr><th>Recordatorio</th><th>Fecha</th><th>Prioridad</th><th>Estado</th><th>Acciones</th></tr></thead><tbody>${
+    sorted.map(r=>`<tr style="opacity:${r.est==='Hecho'?0.5:1}">
+      <td style="font-weight:500">${r.texto}</td>
+      <td>${r.fecha?fmt(r.fecha):'—'}</td>
+      <td><span class="badge ${r.prioridad==='Alta'?'br_':'ba_'}">${r.prioridad||'Media'}</span></td>
+      <td><span class="badge ${r.est==='Hecho'?'bg_':'ba_'}">${r.est}</span></td>
+      <td style="display:flex;gap:4px">
+        ${r.est==='Pendiente'?`<button class="btn bsm bg_" onclick="marcarRecHecho(${r.id})">✓ Hecho</button>`:''}
+        <button class="btn bd bsm" onclick="confirmDel('¿Eliminar recordatorio?',()=>{R=R.filter(x=>x.id!==${r.id});sv(K.r,R);renderRec();renderHoy()})">✕</button>
+      </td>
+    </tr>`).join('')
+  }</tbody></table></div>`;
+}
+
+function saveRec(){
+  const texto=document.getElementById('rec-texto').value.trim();
+  if(!texto){alert('Escribe el recordatorio');return;}
+  const obj={id:Date.now(),texto,fecha:document.getElementById('rec-fecha').value,prioridad:document.getElementById('rec-prio').value,est:'Pendiente'};
+  R.push(obj);sv(K.r,R);closeM('mRec');
+  document.getElementById('rec-texto').value='';
+  document.getElementById('rec-fecha').value='';
+  renderRec();renderHoy();
+}
+
+function marcarRecHecho(id){
+  const i=R.findIndex(x=>x.id===id);
+  if(i>-1){R[i].est='Hecho';sv(K.r,R);renderRec();renderHoy();}
+}
+
+// INIT
+sbInit();
 </script>
 </body>
 </html>
