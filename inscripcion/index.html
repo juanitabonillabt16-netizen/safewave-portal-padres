@@ -1,0 +1,1009 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SafeWave Academy — Inscripción</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;600&family=Montserrat:wght@600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+  /* Pagina de inscripcion SafeWave: una columna, estilo light-luxury (siempre claro),
+     bilingue ES/EN con interruptor arriba. La firma se guarda en Supabase (tabla
+     inscripciones) y deja un mensaje de WhatsApp de respaldo. */
+  :root {
+    --navy: #1C3B5A;
+    --teal: #215F58;
+    --green: #2E8B57;
+
+    --bg: #EFFDF1;
+    --surface: #FFFFFF;
+    --surface-2: #F3FAF4;
+    --border: #DCE7DF;
+    --fg: #16261C;
+    --muted: #5A6E61;
+    --accent: #2E8B57;
+    --accent-ink: #1F6D43;
+    --flag: #FBEFC6;
+    --flag-ink: #7A5B12;
+    --flag-border: #E9D48A;
+    --warn-bg: #FDF4E7;
+    --warn-ink: #8A5A1E;
+    --warn-border: #EAD2A8;
+
+    --grad: linear-gradient(102deg, #1B3A5B 0%, #215F58 52%, #2E8B57 100%);
+
+    --font-display: "Montserrat", system-ui, -apple-system, "Segoe UI", sans-serif;
+    --font-body: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    --font-hand: "Caveat", "Segoe Script", cursive;
+
+    --radius: 16px;
+    --radius-sm: 10px;
+    --maxw: 700px;
+
+    /* Marca SafeWave: light-luxury, siempre claro (sin modo oscuro). */
+    color-scheme: light;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--fg);
+    font-family: var(--font-body);
+    font-size: 16px;
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+  }
+  img { max-width: 100%; }
+  [hidden] { display: none !important; }
+  .wrap {
+    max-width: var(--maxw);
+    margin: 0 auto;
+    padding-left: max(16px, env(safe-area-inset-left, 0px));
+    padding-right: max(16px, env(safe-area-inset-right, 0px));
+    padding-block: 0 56px;
+  }
+
+  /* ---- Interruptor de idioma ---- */
+  .langbar { display: flex; justify-content: flex-end; gap: 6px; padding-top: 14px; }
+  .langbtn {
+    font-family: var(--font-display);
+    font-size: 12.5px; font-weight: 600;
+    color: var(--accent-ink);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    padding: 5px 14px; cursor: pointer;
+  }
+  .langbtn.on { color: #fff; background: var(--grad); border-color: transparent; }
+  .langbtn:active { transform: translateY(1px); }
+
+  /* ---- Encabezado ---- */
+  header.hero {
+    background: var(--grad);
+    color: #fff;
+    border-radius: var(--radius);
+    padding: 30px 24px 28px;
+    margin-top: 12px;
+  }
+  .brand {
+    font-family: var(--font-display);
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    font-size: 13px;
+    opacity: 0.95;
+  }
+  .tagline {
+    font-family: var(--font-hand);
+    font-size: 19px;
+    opacity: 0.95;
+    margin-top: 2px;
+  }
+  header.hero h1 {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: clamp(1.45rem, 1.05rem + 2.3vw, 2rem);
+    line-height: 1.15;
+    margin: 16px 0 10px;
+    text-wrap: balance;
+  }
+  header.hero p.lede {
+    margin: 0;
+    font-size: 14.5px;
+    opacity: 0.94;
+    max-width: 52ch;
+  }
+
+  /* ---- Secciones ---- */
+  section { margin-top: 26px; }
+  .eyebrow {
+    font-family: var(--font-display);
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    font-size: 11.5px;
+    font-weight: 700;
+    color: var(--accent-ink);
+    margin: 0 0 10px;
+  }
+  h2 {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 1.2rem;
+    margin: 0 0 12px;
+    text-wrap: balance;
+  }
+  p { margin: 0 0 12px; }
+  .muted { color: var(--muted); }
+
+  /* ---- Pago ---- */
+  .pay {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px;
+  }
+  .payrow {
+    display: flex;
+    gap: 12px;
+    align-items: baseline;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--border);
+    flex-wrap: wrap;
+  }
+  .payrow:last-child { border-bottom: none; }
+  .payrow .label {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 13.5px;
+    min-width: 120px;
+    color: var(--muted);
+  }
+  .payrow .value { min-width: 0; font-size: 15.5px; word-break: break-word; }
+  .fill {
+    background: var(--flag);
+    color: var(--flag-ink);
+    border: 1px dashed var(--flag-border);
+    border-radius: 6px;
+    padding: 1px 7px;
+    font-size: 13.5px;
+    font-weight: 600;
+  }
+  .copybtn {
+    margin-left: 8px;
+    font-family: var(--font-display);
+    font-size: 12px;
+    font-weight: 600;
+    background: var(--surface-2);
+    color: var(--accent-ink);
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    padding: 3px 11px;
+    cursor: pointer;
+  }
+  .copybtn:active { transform: translateY(1px); }
+
+  /* ---- Datos del estudiante ---- */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px;
+  }
+  .grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+  }
+  .field { min-width: 0; }
+  .field.full { grid-column: 1 / -1; }
+  .field label {
+    display: block;
+    font-family: var(--font-display);
+    font-weight: 600; font-size: 12.5px;
+    margin-bottom: 6px;
+  }
+  .req { color: var(--accent-ink); }
+  .field input[type="text"],
+  .field input[type="tel"],
+  .field input[type="email"],
+  .field textarea {
+    width: 100%;
+    font-size: 16px;
+    font-family: var(--font-body);
+    padding: 11px 13px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    background: var(--surface-2);
+    color: var(--fg);
+  }
+  .field textarea { min-height: 64px; resize: vertical; }
+  .field input:focus-visible,
+  .field textarea:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+  .hp { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
+
+  /* ---- El acuerdo ---- */
+  .art {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 16px 18px;
+    margin-bottom: 10px;
+  }
+  .art h3 {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 1rem;
+    margin: 0 0 8px;
+    display: flex; gap: 10px; align-items: flex-start;
+  }
+  .art h3 .n {
+    flex: none;
+    font-size: 12.5px;
+    font-weight: 700;
+    color: #fff;
+    background: var(--grad);
+    border-radius: 7px;
+    min-width: 24px; height: 24px;
+    display: inline-grid; place-items: center;
+    margin-top: 1px;
+  }
+  .art p, .art li { font-size: 14.5px; color: var(--fg); }
+  .art p { margin: 0 0 8px; }
+  .art p:last-child, .art ul:last-child { margin-bottom: 0; }
+  .art ul { margin: 0 0 4px; padding-left: 18px; }
+  .art li { margin-bottom: 6px; }
+  .art .em { background: var(--warn-bg); color: var(--warn-ink); border-radius: 4px; padding: 0 4px; font-weight: 600; }
+
+  /* ---- Opciones (imagen) ---- */
+  .choice { display: flex; flex-direction: column; gap: 8px; margin-top: 4px; }
+  label.opt {
+    display: flex; gap: 10px; align-items: flex-start;
+    font-size: 14.5px; cursor: pointer;
+    padding: 11px 13px; border: 1px solid var(--border);
+    border-radius: var(--radius-sm); background: var(--surface-2);
+  }
+  label.opt input { margin-top: 2px; width: 18px; height: 18px; accent-color: var(--accent); flex: none; }
+  label.opt.checked { border-color: var(--accent); box-shadow: inset 0 0 0 1px var(--accent); }
+  .opt-note { font-size: 12.5px; color: var(--muted); margin: 0 0 4px; }
+
+  /* ---- Firma ---- */
+  .sign { background: var(--surface-2); border: 1px solid var(--border); border-radius: var(--radius); padding: 22px 20px; }
+  .accept {
+    display: flex; gap: 11px; align-items: flex-start;
+    font-size: 14.5px; cursor: pointer; margin-bottom: 18px;
+    padding: 13px; border: 1px solid var(--border); border-radius: var(--radius-sm); background: var(--surface);
+  }
+  .accept input { margin-top: 2px; width: 19px; height: 19px; accent-color: var(--accent); flex: none; }
+  .accept.checked { border-color: var(--accent); box-shadow: inset 0 0 0 1px var(--accent); }
+  .fecha { font-size: 14px; color: var(--muted); margin: 0 0 14px; }
+  .fecha b { color: var(--fg); font-weight: 600; }
+  .btn {
+    width: 100%;
+    font-family: var(--font-display);
+    font-weight: 700; font-size: 16px;
+    color: #fff; background: var(--grad);
+    border: none; border-radius: 999px;
+    padding: 15px; cursor: pointer;
+    letter-spacing: 0.02em;
+  }
+  .btn:disabled { opacity: 0.6; cursor: wait; }
+  .btn:active:not(:disabled) { transform: translateY(1px); }
+  .hint { font-size: 12.5px; color: var(--muted); margin: 10px 2px 0; text-align: center; }
+  .err { font-size: 13.5px; color: var(--warn-ink); background: var(--warn-bg); border: 1px solid var(--warn-border); border-radius: var(--radius-sm); padding: 10px 12px; margin: 12px 2px 0; text-align: left; }
+  .field-bad input, .field-bad textarea { border-color: var(--warn-border); background: var(--warn-bg); }
+
+  /* ---- Confirmacion ---- */
+  .done { background: var(--surface); border: 1px solid var(--accent); border-radius: var(--radius); padding: 26px 22px; text-align: center; }
+  .done .check { width: 56px; height: 56px; border-radius: 50%; background: var(--grad); color: #fff; display: grid; place-items: center; font-size: 30px; margin: 0 auto 14px; }
+  .done h2 { margin-bottom: 6px; }
+  .done .sig { font-family: var(--font-hand); font-size: 30px; color: var(--accent-ink); margin: 6px 0; }
+  .wa { background: var(--surface-2); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 14px; margin: 16px 0 4px; text-align: left; font-size: 14px; }
+  .wa .resumen { white-space: pre-wrap; color: var(--fg); margin-top: 8px; font-size: 13.5px; }
+
+  footer { margin-top: 34px; text-align: center; font-size: 12px; color: var(--muted); }
+  @media (max-width: 460px) { .grid { grid-template-columns: 1fr; } }
+  @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+
+  <div class="langbar">
+    <button type="button" id="lang-es" class="langbtn on">Español</button>
+    <button type="button" id="lang-en" class="langbtn">English</button>
+  </div>
+
+  <header class="hero">
+    <div class="brand">SafeWave Academy</div>
+    <div class="tagline" data-i18n="tagline">Amor · Paciencia · Dedicación · Comunicación</div>
+    <h1 data-i18n="h1">Acuerdo de clases y políticas de asistencia</h1>
+    <p class="lede" data-i18n="lede">Este acuerdo describe cómo funcionan las clases de natación en SafeWave Academy. Su propósito es que cada familia sepa desde el primer día qué esperar, cómo se cuentan las clases y cómo se manejan las cancelaciones. Debe leerse y firmarse antes de la primera clase.</p>
+  </header>
+
+  <!-- ====== PAGO ====== -->
+  <section aria-labelledby="pago-h">
+    <p class="eyebrow" data-i18n="pay_eye">Paso 1 · El pago</p>
+    <h2 id="pago-h" data-i18n="pay_h">Cómo hacer el pago</h2>
+    <div class="pay">
+      <div class="payrow">
+        <span class="label" data-i18n="pay_l1">Zelle / correo</span>
+        <span class="value"><span class="fill">Safewaveacademy@gmail.com</span>
+          <button class="copybtn" type="button" data-copy="Safewaveacademy@gmail.com" data-i18n="copy">Copiar</button>
+        </span>
+      </div>
+      <div class="payrow">
+        <span class="label" data-i18n="pay_l2">Cómo</span>
+        <span class="value" data-i18n="pay_v2">Puedes pagar por <b>Zelle</b> (desde tu banco, por celular) al correo de arriba.</span>
+      </div>
+      <div class="payrow">
+        <span class="label" data-i18n="pay_l3">Al pagar</span>
+        <span class="value" data-i18n="pay_v3">Las clases se contratan por <b>paquete mensual fijo</b>. Pon el <b>nombre del estudiante</b> en la nota del pago y envía el comprobante por WhatsApp. El pago mensual no es reembolsable.</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ====== DATOS DEL ESTUDIANTE ====== -->
+  <section aria-labelledby="datos-h">
+    <p class="eyebrow" data-i18n="data_eye">Paso 2 · Los datos</p>
+    <h2 id="datos-h" data-i18n="data_h">Datos del estudiante</h2>
+    <div class="card">
+      <div class="grid">
+        <div class="field full">
+          <label for="f_est" data-i18n="f_est_l">Nombre del estudiante <span class="req">*</span></label>
+          <input type="text" id="f_est" autocomplete="off">
+        </div>
+        <div class="field">
+          <label for="f_edad" data-i18n="f_edad_l">Edad</label>
+          <input type="text" id="f_edad" inputmode="numeric" autocomplete="off">
+        </div>
+        <div class="field">
+          <label for="f_tel" data-i18n="f_tel_l">Teléfono <span class="req">*</span></label>
+          <input type="tel" id="f_tel" autocomplete="tel">
+        </div>
+        <div class="field full">
+          <label for="f_padre" data-i18n="f_padre_l">Nombre del padre, madre o tutor <span class="req">*</span></label>
+          <input type="text" id="f_padre" autocomplete="name">
+        </div>
+        <div class="field full">
+          <label for="f_correo" data-i18n="f_correo_l">Correo electrónico</label>
+          <input type="email" id="f_correo" autocomplete="email">
+        </div>
+        <div class="field full">
+          <label for="f_dir" data-i18n="f_dir_l">Dirección</label>
+          <input type="text" id="f_dir" autocomplete="street-address">
+        </div>
+        <div class="field full">
+          <label for="f_med" data-i18n="f_med_l">Alergias o condiciones médicas</label>
+          <textarea id="f_med" data-i18n-ph="f_med_ph" placeholder="Si no hay, escribe «Ninguna»."></textarea>
+        </div>
+      </div>
+      <div class="hp" aria-hidden="true">
+        <label for="hp_web">No llenar</label>
+        <input type="text" id="hp_web" name="website" tabindex="-1" autocomplete="off">
+      </div>
+    </div>
+  </section>
+
+  <!-- ====== EL ACUERDO ====== -->
+  <section aria-labelledby="acuerdo-h">
+    <p class="eyebrow" data-i18n="agr_eye">Paso 3 · El acuerdo</p>
+    <h2 id="acuerdo-h" data-i18n="agr_h">Políticas de las clases</h2>
+
+    <div class="art">
+      <h3><span class="n">1</span> <span data-i18n="a1_t">Modalidad de clases y pago</span></h3>
+      <ul>
+        <li data-i18n="a1_1">Las clases se contratan por paquete mensual fijo, con un número de clases definido al inicio de cada mes según el día y la hora asignados.</li>
+        <li data-i18n="a1_2">El horario asignado se reserva de forma exclusiva para el estudiante. Al reservarlo, ese espacio deja de estar disponible para otras familias.</li>
+        <li data-i18n="a1_3">El pago mensual no es reembolsable. Si la familia decide suspender las clases a mitad del mes, el saldo no se devuelve.</li>
+      </ul>
+    </div>
+
+    <div class="art">
+      <h3><span class="n">2</span> <span data-i18n="a2_t">Cancelaciones con aviso</span></h3>
+      <p data-i18n="a2_p">Para cancelar una clase sin que se cuente como tomada, el aviso debe darse con un mínimo de <span class="em">UNA (1) HORA</span> de anticipación a la hora de inicio de la clase, por mensaje de WhatsApp al número oficial de SafeWave Academy.</p>
+      <ul>
+        <li data-i18n="a2_1">Cancelaciones avisadas con una hora o más de anticipación: la clase no se cuenta y se puede reponer dentro del mismo mes, sujeta a disponibilidad de horario.</li>
+      </ul>
+    </div>
+
+    <div class="art">
+      <h3><span class="n">3</span> <span data-i18n="a3_t">Cancelaciones tardías e inasistencia</span></h3>
+      <p data-i18n="a3_p1">Si la cancelación se avisa con menos de una (1) hora de anticipación, o si el estudiante no se presenta a la clase, la clase <span class="em">SE CUENTA COMO TOMADA</span> y no genera reposición.</p>
+      <p data-i18n="a3_p2">Esta política existe porque el horario ya fue reservado, la instructora ya se desplazó o se preparó para esa sesión, y ese espacio no se pudo ofrecer a otra familia.</p>
+    </div>
+
+    <div class="art">
+      <h3><span class="n">4</span> <span data-i18n="a4_t">Cancelaciones repetidas</span></h3>
+      <p data-i18n="a4_p">Si el estudiante cancela <span class="em">TRES (3) CLASES CONSECUTIVAS</span>, aunque sea con el aviso de una hora, la tercera clase se cuenta como tomada y no genera reposición.</p>
+      <ul>
+        <li data-i18n="a4_1">El conteo se reinicia cuando el estudiante asiste a una clase.</li>
+        <li data-i18n="a4_2">Las ausencias por enfermedad documentada o por las causas descritas en la sección 5 no entran en este conteo.</li>
+        <li data-i18n="a4_3">Si las cancelaciones repetidas se vuelven un patrón, SafeWave Academy podrá liberar el horario asignado para ofrecerlo a otra familia y reubicar al estudiante en el siguiente espacio disponible.</li>
+      </ul>
+    </div>
+
+    <div class="art">
+      <h3><span class="n">5</span> <span data-i18n="a5_t">Cancelación por clima o condiciones de la piscina</span></h3>
+      <p data-i18n="a5_p">La seguridad está por encima de cualquier clase. SafeWave Academy suspende o no inicia la clase cuando hay tormenta eléctrica, truenos, relámpagos, lluvia fuerte, alertas meteorológicas, temperatura del agua no apta, o condiciones del agua que no sean seguras o higiénicas.</p>
+      <ul>
+        <li data-i18n="a5_1">Se aplica la regla de seguridad acuática de esperar 30 minutos después del último trueno o relámpago antes de entrar al agua.</li>
+        <li data-i18n="a5_2">Si la clase no alcanza a iniciar por estas razones, no se cuenta y se reprograma sin costo.</li>
+        <li data-i18n="a5_3">La decisión de suspender por clima la toma la instructora y es final.</li>
+      </ul>
+    </div>
+
+    <div class="art">
+      <h3><span class="n">6</span> <span data-i18n="a6_t">Clase interrumpida después de haber iniciado</span></h3>
+      <p data-i18n="a6_p">Cuando la clase ya comenzó y debe suspenderse por clima o por una condición de seguridad, se aplica lo siguiente:</p>
+      <ul>
+        <li data-i18n="a6_1">Se registra el tiempo efectivamente trabajado y se cuenta como clase parcial.</li>
+        <li data-i18n="a6_2">Los minutos restantes se reponen: se suman a otra sesión o se completan en una clase de reposición dentro del mismo mes, sujeta a disponibilidad.</li>
+        <li data-i18n="a6_3">Si al momento de la suspensión ya se completó la mitad o más del tiempo de la clase, esta se cuenta como clase completa.</li>
+      </ul>
+    </div>
+
+    <div class="art">
+      <h3><span class="n">7</span> <span data-i18n="a7_t">Cancelación por parte de la instructora</span></h3>
+      <ul>
+        <li data-i18n="a7_1">Si SafeWave Academy cancela una clase por enfermedad, emergencia u otra causa propia, la clase no se cuenta y se repone completa, o se acredita al mes siguiente.</li>
+        <li data-i18n="a7_2">El aviso se dará lo antes posible por WhatsApp.</li>
+      </ul>
+    </div>
+
+    <div class="art">
+      <h3><span class="n">8</span> <span data-i18n="a8_t">Puntualidad</span></h3>
+      <ul>
+        <li data-i18n="a8_1">Por los traslados entre sedes, la hora de inicio puede variar hasta 10 minutos. Cuando esto ocurra, la clase se dicta completa.</li>
+        <li data-i18n="a8_2">La instructora espera al estudiante un máximo de 15 minutos. Si no llega dentro de ese tiempo, la clase se cancela y se cuenta como tomada.</li>
+        <li data-i18n="a8_3">Si el estudiante llega tarde, el tiempo perdido no se recupera, porque afecta el horario de las demás familias.</li>
+        <li data-i18n="a8_4">Se recomienda llegar 10 minutos antes, ya cambiado y listo para entrar al agua.</li>
+      </ul>
+    </div>
+
+    <div class="art">
+      <h3><span class="n">9</span> <span data-i18n="a9_t">Salud y seguridad del estudiante</span></h3>
+      <ul>
+        <li data-i18n="a9_1">El estudiante no debe asistir con fiebre, diarrea, vómito, conjuntivitis, infecciones de oído activas, heridas abiertas o cualquier condición contagiosa.</li>
+        <li data-i18n="a9_2">El padre, madre o tutor debe informar por escrito cualquier condición médica, alergia, cirugía reciente o medicamento relevante antes de la primera clase, y avisar de inmediato si algo cambia.</li>
+        <li data-i18n="a9_3">Los niños que no controlan esfínteres deben usar pañal de natación con traje ajustado por encima. Un accidente en el agua que obligue a cerrar la piscina termina la clase y esta se cuenta como tomada.</li>
+        <li data-i18n="a9_4">El padre, madre o tutor debe permanecer presente durante toda la clase y hacerse cargo del estudiante antes y después de la sesión.</li>
+        <li data-i18n="a9_5">La natación implica riesgos inherentes. SafeWave Academy trabaja con supervisión constante y protocolos de seguridad, pero ninguna clase elimina por completo el riesgo de accidentes, y ningún nivel alcanzado hace que un niño sea «a prueba de ahogamiento». La supervisión de un adulto cerca del agua siempre es indispensable.</li>
+      </ul>
+    </div>
+
+    <div class="art">
+      <h3><span class="n">10</span> <span data-i18n="a10_t">Comunicación</span></h3>
+      <ul>
+        <li data-i18n="a10_1">Todo lo relacionado con horarios, cancelaciones y pagos se maneja por WhatsApp al número oficial de SafeWave Academy.</li>
+        <li data-i18n="a10_2">La instructora responde mensajes en horario laboral. Durante las clases no es posible contestar de inmediato.</li>
+        <li data-i18n="a10_3">El progreso del estudiante se comparte de forma periódica con la familia.</li>
+      </ul>
+    </div>
+
+    <div class="art">
+      <h3><span class="n">11</span> <span data-i18n="a11_t">Uso de imagen</span> <span style="font-weight:500;color:var(--muted);font-size:13px" data-i18n="a11_opt">(opcional)</span></h3>
+      <p class="opt-note" data-i18n="a11_note">Marca una opción. Esta autorización es completamente voluntaria y no afecta la inscripción.</p>
+      <div class="choice">
+        <label class="opt"><input type="radio" name="imagen" value="si"> <span data-i18n="a11_si"><b>SÍ autorizo</b> a SafeWave Academy a tomar fotos y videos de mi hijo o hija durante las clases y usarlos en redes sociales y material promocional.</span></label>
+        <label class="opt"><input type="radio" name="imagen" value="no"> <span data-i18n="a11_no"><b>NO autorizo</b> el uso de fotos ni videos de mi hijo o hija.</span></label>
+      </div>
+    </div>
+
+    <div class="art">
+      <h3><span class="n">12</span> <span data-i18n="a12_t">Vigencia y cambios</span></h3>
+      <ul>
+        <li data-i18n="a12_1">Este acuerdo entra en vigor con la firma y se mantiene vigente mientras el estudiante continúe inscrito.</li>
+        <li data-i18n="a12_2">Cualquier cambio en tarifas o políticas se comunicará por escrito con al menos 30 días de anticipación.</li>
+        <li data-i18n="a12_3">Cualquiera de las partes puede terminar el acuerdo avisando por escrito con 15 días de anticipación. Los pagos del mes en curso no son reembolsables.</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ====== FIRMA / ACEPTACION ====== -->
+  <section aria-labelledby="firma-h" id="firma-sec">
+    <p class="eyebrow" data-i18n="sign_eye">Paso 4 · Tu firma</p>
+    <h2 id="firma-h" data-i18n="sign_h">Aceptación y firma</h2>
+    <div class="sign">
+      <label class="accept" id="accept-box">
+        <input type="checkbox" id="acepto">
+        <span data-i18n="accept_txt">Declaro que leí y entendí este acuerdo en su totalidad, incluidas las políticas de cancelación y conteo de clases, y que acepto sus términos.</span>
+      </label>
+      <p class="fecha"><span data-i18n="sign_as">Firma como:</span> <b id="firmante">—</b> · <span data-i18n="date_lbl">Fecha:</span> <b id="hoy"></b></p>
+      <button class="btn" type="button" id="firmar" data-i18n="sign_btn">Firmar el acuerdo</button>
+      <p class="err" id="firma-error" hidden></p>
+      <p class="hint" data-i18n="sign_hint">El nombre del padre, madre o tutor funciona como tu firma en letra de imprenta.</p>
+    </div>
+  </section>
+
+  <!-- ====== CONFIRMACION ====== -->
+  <section id="confirma" hidden>
+    <div class="done">
+      <div class="check">&#10003;</div>
+      <h2 data-i18n="done_h">¡Listo, gracias!</h2>
+      <p class="muted" data-i18n="done_by">Acuerdo firmado por</p>
+      <div class="sig" id="signame">—</div>
+      <p class="muted" id="confirma-msg" style="font-size:13.5px"></p>
+      <div class="wa">
+        <strong style="font-family:var(--font-display);font-size:13px" data-i18n="wa_title">Mensaje para enviar por WhatsApp</strong>
+        <div class="resumen" id="resumen"></div>
+        <button class="copybtn" type="button" id="copyres" data-i18n="copy_msg" style="margin:12px 0 0;width:100%;padding:10px">Copiar mensaje</button>
+      </div>
+    </div>
+  </section>
+
+  <footer>SafeWave Academy · Kendall · Doral · Princeton · Miami Beach</footer>
+</div>
+
+<script>
+  (function () {
+    "use strict";
+
+    // ---- Traducciones ES / EN ----
+    var I18N = {
+      es: {
+        tagline: "Amor · Paciencia · Dedicación · Comunicación",
+        h1: "Acuerdo de clases y políticas de asistencia",
+        lede: "Este acuerdo describe cómo funcionan las clases de natación en SafeWave Academy. Su propósito es que cada familia sepa desde el primer día qué esperar, cómo se cuentan las clases y cómo se manejan las cancelaciones. Debe leerse y firmarse antes de la primera clase.",
+        pay_eye: "Paso 1 · El pago",
+        pay_h: "Cómo hacer el pago",
+        pay_l1: "Zelle / correo",
+        pay_l2: "Cómo",
+        pay_v2: "Puedes pagar por <b>Zelle</b> (desde tu banco, por celular) al correo de arriba.",
+        pay_l3: "Al pagar",
+        pay_v3: "Las clases se contratan por <b>paquete mensual fijo</b>. Pon el <b>nombre del estudiante</b> en la nota del pago y envía el comprobante por WhatsApp. El pago mensual no es reembolsable.",
+        copy: "Copiar",
+        data_eye: "Paso 2 · Los datos",
+        data_h: "Datos del estudiante",
+        f_est_l: "Nombre del estudiante <span class=\"req\">*</span>",
+        f_edad_l: "Edad",
+        f_tel_l: "Teléfono <span class=\"req\">*</span>",
+        f_padre_l: "Nombre del padre, madre o tutor <span class=\"req\">*</span>",
+        f_correo_l: "Correo electrónico",
+        f_dir_l: "Dirección",
+        f_med_l: "Alergias o condiciones médicas",
+        f_med_ph: "Si no hay, escribe «Ninguna».",
+        agr_eye: "Paso 3 · El acuerdo",
+        agr_h: "Políticas de las clases",
+        a1_t: "Modalidad de clases y pago",
+        a1_1: "Las clases se contratan por paquete mensual fijo, con un número de clases definido al inicio de cada mes según el día y la hora asignados.",
+        a1_2: "El horario asignado se reserva de forma exclusiva para el estudiante. Al reservarlo, ese espacio deja de estar disponible para otras familias.",
+        a1_3: "El pago mensual no es reembolsable. Si la familia decide suspender las clases a mitad del mes, el saldo no se devuelve.",
+        a2_t: "Cancelaciones con aviso",
+        a2_p: "Para cancelar una clase sin que se cuente como tomada, el aviso debe darse con un mínimo de <span class=\"em\">UNA (1) HORA</span> de anticipación a la hora de inicio de la clase, por mensaje de WhatsApp al número oficial de SafeWave Academy.",
+        a2_1: "Cancelaciones avisadas con una hora o más de anticipación: la clase no se cuenta y se puede reponer dentro del mismo mes, sujeta a disponibilidad de horario.",
+        a3_t: "Cancelaciones tardías e inasistencia",
+        a3_p1: "Si la cancelación se avisa con menos de una (1) hora de anticipación, o si el estudiante no se presenta a la clase, la clase <span class=\"em\">SE CUENTA COMO TOMADA</span> y no genera reposición.",
+        a3_p2: "Esta política existe porque el horario ya fue reservado, la instructora ya se desplazó o se preparó para esa sesión, y ese espacio no se pudo ofrecer a otra familia.",
+        a4_t: "Cancelaciones repetidas",
+        a4_p: "Si el estudiante cancela <span class=\"em\">TRES (3) CLASES CONSECUTIVAS</span>, aunque sea con el aviso de una hora, la tercera clase se cuenta como tomada y no genera reposición.",
+        a4_1: "El conteo se reinicia cuando el estudiante asiste a una clase.",
+        a4_2: "Las ausencias por enfermedad documentada o por las causas descritas en la sección 5 no entran en este conteo.",
+        a4_3: "Si las cancelaciones repetidas se vuelven un patrón, SafeWave Academy podrá liberar el horario asignado para ofrecerlo a otra familia y reubicar al estudiante en el siguiente espacio disponible.",
+        a5_t: "Cancelación por clima o condiciones de la piscina",
+        a5_p: "La seguridad está por encima de cualquier clase. SafeWave Academy suspende o no inicia la clase cuando hay tormenta eléctrica, truenos, relámpagos, lluvia fuerte, alertas meteorológicas, temperatura del agua no apta, o condiciones del agua que no sean seguras o higiénicas.",
+        a5_1: "Se aplica la regla de seguridad acuática de esperar 30 minutos después del último trueno o relámpago antes de entrar al agua.",
+        a5_2: "Si la clase no alcanza a iniciar por estas razones, no se cuenta y se reprograma sin costo.",
+        a5_3: "La decisión de suspender por clima la toma la instructora y es final.",
+        a6_t: "Clase interrumpida después de haber iniciado",
+        a6_p: "Cuando la clase ya comenzó y debe suspenderse por clima o por una condición de seguridad, se aplica lo siguiente:",
+        a6_1: "Se registra el tiempo efectivamente trabajado y se cuenta como clase parcial.",
+        a6_2: "Los minutos restantes se reponen: se suman a otra sesión o se completan en una clase de reposición dentro del mismo mes, sujeta a disponibilidad.",
+        a6_3: "Si al momento de la suspensión ya se completó la mitad o más del tiempo de la clase, esta se cuenta como clase completa.",
+        a7_t: "Cancelación por parte de la instructora",
+        a7_1: "Si SafeWave Academy cancela una clase por enfermedad, emergencia u otra causa propia, la clase no se cuenta y se repone completa, o se acredita al mes siguiente.",
+        a7_2: "El aviso se dará lo antes posible por WhatsApp.",
+        a8_t: "Puntualidad",
+        a8_1: "Por los traslados entre sedes, la hora de inicio puede variar hasta 10 minutos. Cuando esto ocurra, la clase se dicta completa.",
+        a8_2: "La instructora espera al estudiante un máximo de 15 minutos. Si no llega dentro de ese tiempo, la clase se cancela y se cuenta como tomada.",
+        a8_3: "Si el estudiante llega tarde, el tiempo perdido no se recupera, porque afecta el horario de las demás familias.",
+        a8_4: "Se recomienda llegar 10 minutos antes, ya cambiado y listo para entrar al agua.",
+        a9_t: "Salud y seguridad del estudiante",
+        a9_1: "El estudiante no debe asistir con fiebre, diarrea, vómito, conjuntivitis, infecciones de oído activas, heridas abiertas o cualquier condición contagiosa.",
+        a9_2: "El padre, madre o tutor debe informar por escrito cualquier condición médica, alergia, cirugía reciente o medicamento relevante antes de la primera clase, y avisar de inmediato si algo cambia.",
+        a9_3: "Los niños que no controlan esfínteres deben usar pañal de natación con traje ajustado por encima. Un accidente en el agua que obligue a cerrar la piscina termina la clase y esta se cuenta como tomada.",
+        a9_4: "El padre, madre o tutor debe permanecer presente durante toda la clase y hacerse cargo del estudiante antes y después de la sesión.",
+        a9_5: "La natación implica riesgos inherentes. SafeWave Academy trabaja con supervisión constante y protocolos de seguridad, pero ninguna clase elimina por completo el riesgo de accidentes, y ningún nivel alcanzado hace que un niño sea «a prueba de ahogamiento». La supervisión de un adulto cerca del agua siempre es indispensable.",
+        a10_t: "Comunicación",
+        a10_1: "Todo lo relacionado con horarios, cancelaciones y pagos se maneja por WhatsApp al número oficial de SafeWave Academy.",
+        a10_2: "La instructora responde mensajes en horario laboral. Durante las clases no es posible contestar de inmediato.",
+        a10_3: "El progreso del estudiante se comparte de forma periódica con la familia.",
+        a11_t: "Uso de imagen",
+        a11_opt: "(opcional)",
+        a11_note: "Marca una opción. Esta autorización es completamente voluntaria y no afecta la inscripción.",
+        a11_si: "<b>SÍ autorizo</b> a SafeWave Academy a tomar fotos y videos de mi hijo o hija durante las clases y usarlos en redes sociales y material promocional.",
+        a11_no: "<b>NO autorizo</b> el uso de fotos ni videos de mi hijo o hija.",
+        a12_t: "Vigencia y cambios",
+        a12_1: "Este acuerdo entra en vigor con la firma y se mantiene vigente mientras el estudiante continúe inscrito.",
+        a12_2: "Cualquier cambio en tarifas o políticas se comunicará por escrito con al menos 30 días de anticipación.",
+        a12_3: "Cualquiera de las partes puede terminar el acuerdo avisando por escrito con 15 días de anticipación. Los pagos del mes en curso no son reembolsables.",
+        sign_eye: "Paso 4 · Tu firma",
+        sign_h: "Aceptación y firma",
+        accept_txt: "Declaro que leí y entendí este acuerdo en su totalidad, incluidas las políticas de cancelación y conteo de clases, y que acepto sus términos.",
+        sign_as: "Firma como:",
+        date_lbl: "Fecha:",
+        sign_btn: "Firmar el acuerdo",
+        sign_hint: "El nombre del padre, madre o tutor funciona como tu firma en letra de imprenta.",
+        done_h: "¡Listo, gracias!",
+        done_by: "Acuerdo firmado por",
+        wa_title: "Mensaje para enviar por WhatsApp",
+        copy_msg: "Copiar mensaje",
+        // dinamicos
+        locale: "es",
+        copied: "¡Copiado!",
+        conf_saved: "Tu inscripción quedó registrada con SafeWave Academy. Para terminar, envía tu <b>comprobante de pago</b> por WhatsApp; si quieres, copia este resumen y mándaselo también.",
+        conf_unsaved: "<b>Importante:</b> no pudimos guardar tu inscripción automáticamente. Por favor copia este mensaje y envíaselo a SafeWave Academy por WhatsApp junto con tu comprobante de pago.",
+        signing: "Firmando…",
+        miss_lead: "Para firmar, todavía falta: ",
+        miss_est: "el nombre del estudiante",
+        miss_padre: "tu nombre (padre, madre o tutor)",
+        miss_tel: "tu teléfono",
+        miss_acepto: "marcar la casilla de que leíste y aceptas",
+        img_si: "SÍ autorizo (redes y material promocional)",
+        img_no: "NO autorizo",
+        img_none: "Sin responder (opcional)",
+        wa_intro: "Hola, firmé el Acuerdo de clases de SafeWave.",
+        wa_student: "Estudiante",
+        wa_years: "años",
+        wa_parent: "Padre/madre/tutor",
+        wa_phone: "Teléfono",
+        wa_email: "Correo",
+        wa_address: "Dirección",
+        wa_allergies: "Alergias/condiciones médicas",
+        wa_none: "No especificado",
+        wa_image: "Uso de imagen",
+        wa_date: "Fecha",
+        wa_accept: "Leí y acepto el acuerdo completo (políticas de cancelación, conteo de clases, clima, salud y seguridad).",
+        wa_receipt: "Ya te envío el comprobante de pago."
+      },
+      en: {
+        tagline: "Love · Patience · Dedication · Communication",
+        h1: "Class agreement and attendance policies",
+        lede: "This agreement explains how swim lessons work at SafeWave Academy. Its purpose is for every family to know from day one what to expect, how classes are counted, and how cancellations are handled. It must be read and signed before the first class.",
+        pay_eye: "Step 1 · Payment",
+        pay_h: "How to pay",
+        pay_l1: "Zelle / email",
+        pay_l2: "How",
+        pay_v2: "You can pay by <b>Zelle</b> (from your bank, by phone) to the email above.",
+        pay_l3: "When you pay",
+        pay_v3: "Classes are booked as a <b>fixed monthly package</b>. Put the <b>student's name</b> in the payment note and send the receipt by WhatsApp. The monthly payment is non-refundable.",
+        copy: "Copy",
+        data_eye: "Step 2 · Details",
+        data_h: "Student information",
+        f_est_l: "Student's name <span class=\"req\">*</span>",
+        f_edad_l: "Age",
+        f_tel_l: "Phone <span class=\"req\">*</span>",
+        f_padre_l: "Parent or guardian's name <span class=\"req\">*</span>",
+        f_correo_l: "Email",
+        f_dir_l: "Address",
+        f_med_l: "Allergies or medical conditions",
+        f_med_ph: "If none, write \"None\".",
+        agr_eye: "Step 3 · The agreement",
+        agr_h: "Class policies",
+        a1_t: "Class format and payment",
+        a1_1: "Classes are booked as a fixed monthly package, with a set number of classes defined at the start of each month based on the assigned day and time.",
+        a1_2: "The assigned time slot is reserved exclusively for the student. Once reserved, that slot is no longer available to other families.",
+        a1_3: "The monthly payment is non-refundable. If the family decides to stop classes mid-month, the balance is not refunded.",
+        a2_t: "Cancellations with notice",
+        a2_p: "To cancel a class without it counting as taken, notice must be given at least <span class=\"em\">ONE (1) HOUR</span> before the class start time, by WhatsApp message to SafeWave Academy's official number.",
+        a2_1: "Cancellations given with one hour or more notice: the class is not counted and may be made up within the same month, subject to schedule availability.",
+        a3_t: "Late cancellations and no-shows",
+        a3_p1: "If a cancellation is given with less than one (1) hour notice, or if the student does not show up, the class <span class=\"em\">COUNTS AS TAKEN</span> and no make-up is given.",
+        a3_p2: "This policy exists because the time slot was already reserved, the instructor already traveled or prepared for that session, and that slot could not be offered to another family.",
+        a4_t: "Repeated cancellations",
+        a4_p: "If the student cancels <span class=\"em\">THREE (3) CONSECUTIVE CLASSES</span>, even with one hour notice, the third class counts as taken and no make-up is given.",
+        a4_1: "The count resets when the student attends a class.",
+        a4_2: "Absences due to documented illness or the causes described in section 5 do not count toward this total.",
+        a4_3: "If repeated cancellations become a pattern, SafeWave Academy may release the assigned time slot to offer it to another family and move the student to the next available slot.",
+        a5_t: "Cancellation due to weather or pool conditions",
+        a5_p: "Safety comes before any class. SafeWave Academy suspends or does not start the class when there is a thunderstorm, thunder, lightning, heavy rain, weather alerts, unsuitable water temperature, or water conditions that are not safe or hygienic.",
+        a5_1: "The water-safety rule applies: wait 30 minutes after the last thunder or lightning before entering the water.",
+        a5_2: "If the class cannot start for these reasons, it is not counted and is rescheduled at no cost.",
+        a5_3: "The decision to suspend due to weather is made by the instructor and is final.",
+        a6_t: "Class interrupted after it has started",
+        a6_p: "When the class has already started and must be stopped due to weather or a safety condition, the following applies:",
+        a6_1: "The time actually worked is recorded and counted as a partial class.",
+        a6_2: "The remaining minutes are made up: added to another session or completed in a make-up class within the same month, subject to availability.",
+        a6_3: "If at the time of stopping half or more of the class time was already completed, it counts as a full class.",
+        a7_t: "Cancellation by the instructor",
+        a7_1: "If SafeWave Academy cancels a class due to illness, emergency, or another reason of its own, the class is not counted and is fully made up, or credited to the following month.",
+        a7_2: "Notice will be given as soon as possible by WhatsApp.",
+        a8_t: "Punctuality",
+        a8_1: "Due to travel between locations, the start time may vary by up to 10 minutes. When this happens, the full class is still taught.",
+        a8_2: "The instructor waits for the student a maximum of 15 minutes. If the student does not arrive within that time, the class is canceled and counts as taken.",
+        a8_3: "If the student arrives late, the lost time is not recovered, because it affects the schedule of the other families.",
+        a8_4: "We recommend arriving 10 minutes early, already changed and ready to get in the water.",
+        a9_t: "Student health and safety",
+        a9_1: "The student must not attend with fever, diarrhea, vomiting, conjunctivitis, active ear infections, open wounds, or any contagious condition.",
+        a9_2: "The parent or guardian must report in writing any medical condition, allergy, recent surgery, or relevant medication before the first class, and notify immediately if anything changes.",
+        a9_3: "Children who are not toilet-trained must wear a swim diaper with a snug swimsuit over it. An accident in the water that forces the pool to close ends the class, and it counts as taken.",
+        a9_4: "The parent or guardian must remain present during the entire class and be responsible for the student before and after the session.",
+        a9_5: "Swimming involves inherent risks. SafeWave Academy works with constant supervision and safety protocols, but no class completely eliminates the risk of accidents, and no level reached makes a child \"drown-proof\". Adult supervision near the water is always essential.",
+        a10_t: "Communication",
+        a10_1: "Everything related to scheduling, cancellations, and payments is handled by WhatsApp to SafeWave Academy's official number.",
+        a10_2: "The instructor replies to messages during business hours. During classes it is not possible to reply right away.",
+        a10_3: "The student's progress is shared with the family on a regular basis.",
+        a11_t: "Image use",
+        a11_opt: "(optional)",
+        a11_note: "Choose one option. This authorization is completely voluntary and does not affect enrollment.",
+        a11_si: "<b>I DO authorize</b> SafeWave Academy to take photos and videos of my child during classes and use them on social media and promotional material.",
+        a11_no: "<b>I do NOT authorize</b> the use of photos or videos of my child.",
+        a12_t: "Term and changes",
+        a12_1: "This agreement takes effect upon signing and remains in effect while the student stays enrolled.",
+        a12_2: "Any change in fees or policies will be communicated in writing at least 30 days in advance.",
+        a12_3: "Either party may end the agreement with 15 days written notice. Payments for the current month are non-refundable.",
+        sign_eye: "Step 4 · Your signature",
+        sign_h: "Acceptance and signature",
+        accept_txt: "I declare that I have read and understood this agreement in full, including the cancellation and class-counting policies, and that I accept its terms.",
+        sign_as: "Signing as:",
+        date_lbl: "Date:",
+        sign_btn: "Sign the agreement",
+        sign_hint: "The parent or guardian's name serves as your printed signature.",
+        done_h: "Done, thank you!",
+        done_by: "Agreement signed by",
+        wa_title: "Message to send by WhatsApp",
+        copy_msg: "Copy message",
+        // dynamic
+        locale: "en-US",
+        copied: "Copied!",
+        conf_saved: "Your enrollment has been recorded with SafeWave Academy. To finish, send your <b>payment receipt</b> by WhatsApp; if you like, copy this summary and send it too.",
+        conf_unsaved: "<b>Important:</b> we couldn't save your enrollment automatically. Please copy this message and send it to SafeWave Academy by WhatsApp along with your payment receipt.",
+        signing: "Signing…",
+        miss_lead: "To sign, you still need: ",
+        miss_est: "the student's name",
+        miss_padre: "your name (parent or guardian)",
+        miss_tel: "your phone",
+        miss_acepto: "to check the box that you read and accept",
+        img_si: "Yes, I authorize (social media and promo material)",
+        img_no: "No, I do not authorize",
+        img_none: "Not answered (optional)",
+        wa_intro: "Hi, I signed the SafeWave class agreement.",
+        wa_student: "Student",
+        wa_years: "years old",
+        wa_parent: "Parent/guardian",
+        wa_phone: "Phone",
+        wa_email: "Email",
+        wa_address: "Address",
+        wa_allergies: "Allergies/medical conditions",
+        wa_none: "Not specified",
+        wa_image: "Image use",
+        wa_date: "Date",
+        wa_accept: "I have read and accept the full agreement (cancellation policies, class counting, weather, health and safety).",
+        wa_receipt: "I'm sending you the payment receipt now."
+      }
+    };
+
+    // ---- Conexion a Supabase (anon key: publica por diseno) ----
+    var SB_URL = "https://yfcvvtvvoqndwazprnul.supabase.co";
+    var SB_ANON = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlmY3Z2dHZ2b3FuZHdhenBybnVsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODIwNzM5OTEsImV4cCI6MjA5NzY0OTk5MX0.53eNjNrhTVnw_UXnVLB2Ol7MtH5pIgp35eZtmYfrqs4";
+    var sb = null;
+    try { sb = window.supabase ? window.supabase.createClient(SB_URL, SB_ANON) : null; } catch (e) { sb = null; }
+
+    // ---- Estado de idioma ----
+    var lang = "es";
+    try { var g = localStorage.getItem("sw_lang"); if (g === "en" || g === "es") lang = g; } catch (e) {}
+
+    var hoyTxt = "";
+    var ultimoGuardado = null; // null = sin firmar todavia
+
+    function t(k) { return I18N[lang][k]; }
+
+    function recomputeFecha() {
+      try {
+        hoyTxt = new Intl.DateTimeFormat(t("locale"), { day: "numeric", month: "long", year: "numeric" }).format(new Date());
+      } catch (e) {
+        hoyTxt = new Date().toLocaleDateString();
+      }
+      var h = document.getElementById("hoy");
+      if (h) h.textContent = hoyTxt;
+    }
+
+    function aplicarIdioma(l) {
+      lang = l;
+      document.documentElement.lang = l;
+      var dict = I18N[l];
+      document.querySelectorAll("[data-i18n]").forEach(function (el) {
+        var k = el.getAttribute("data-i18n");
+        if (dict[k] != null) el.innerHTML = dict[k];
+      });
+      document.querySelectorAll("[data-i18n-ph]").forEach(function (el) {
+        var k = el.getAttribute("data-i18n-ph");
+        if (dict[k] != null) el.setAttribute("placeholder", dict[k]);
+      });
+      document.getElementById("lang-es").classList.toggle("on", l === "es");
+      document.getElementById("lang-en").classList.toggle("on", l === "en");
+      recomputeFecha();
+      revisar();
+      // si ya firmo y cambia de idioma, re-pinta la confirmacion
+      if (ultimoGuardado !== null) {
+        document.getElementById("resumen").textContent = construirResumen();
+        document.getElementById("confirma-msg").innerHTML = ultimoGuardado ? t("conf_saved") : t("conf_unsaved");
+      }
+      try { localStorage.setItem("sw_lang", l); } catch (e) {}
+    }
+
+    document.getElementById("lang-es").addEventListener("click", function () { aplicarIdioma("es"); });
+    document.getElementById("lang-en").addEventListener("click", function () { aplicarIdioma("en"); });
+
+    // ---- Opciones (uso de imagen) ----
+    document.querySelectorAll("label.opt input").forEach(function (inp) {
+      inp.addEventListener("change", function () {
+        document.querySelectorAll('label.opt input[name="' + inp.name + '"]').forEach(function (o) {
+          o.closest("label.opt").classList.toggle("checked", o.checked);
+        });
+      });
+    });
+
+    var est = document.getElementById("f_est");
+    var tel = document.getElementById("f_tel");
+    var padre = document.getElementById("f_padre");
+    var acepto = document.getElementById("acepto");
+    var acceptBox = document.getElementById("accept-box");
+    var btn = document.getElementById("firmar");
+    var firmante = document.getElementById("firmante");
+    var errBox = document.getElementById("firma-error");
+
+    [est, tel, padre].forEach(function (f) { f.addEventListener("input", revisar); });
+    acepto.addEventListener("change", function () {
+      acceptBox.classList.toggle("checked", acepto.checked);
+      revisar();
+    });
+
+    function val(id) { return document.getElementById(id).value.trim(); }
+
+    function faltantes() {
+      var f = [];
+      if (val("f_est").length < 2) f.push(["f_est", t("miss_est")]);
+      if (val("f_padre").length < 2) f.push(["f_padre", t("miss_padre")]);
+      if (val("f_tel").length < 7) f.push(["f_tel", t("miss_tel")]);
+      if (!acepto.checked) f.push(["accept-box", t("miss_acepto")]);
+      return f;
+    }
+
+    function marcar(idList, on) {
+      idList.forEach(function (id) {
+        var el = document.getElementById(id);
+        var wrap = el && el.closest ? el.closest(".field") : null;
+        if (wrap) wrap.classList.toggle("field-bad", on);
+      });
+    }
+
+    function revisar() {
+      firmante.textContent = padre.value.trim() || "—";
+      if (!errBox.hidden) {
+        var f = faltantes();
+        marcar(["f_est", "f_padre", "f_tel"], false);
+        if (f.length === 0) { errBox.hidden = true; }
+        else { pintarAviso(f); }
+      }
+    }
+
+    function pintarAviso(f) {
+      marcar(["f_est", "f_padre", "f_tel"], false);
+      marcar(f.map(function (x) { return x[0]; }).filter(function (id) { return id !== "accept-box"; }), true);
+      errBox.textContent = t("miss_lead") + f.map(function (x) { return x[1]; }).join(", ") + ".";
+      errBox.hidden = false;
+    }
+
+    function imagenVal() {
+      var sel = document.querySelector('input[name="imagen"]:checked');
+      return sel ? sel.value : null;
+    }
+    function imagenTxt() {
+      var v = imagenVal();
+      if (!v) return t("img_none");
+      return v === "si" ? t("img_si") : t("img_no");
+    }
+
+    function construirResumen() {
+      var edad = val("f_edad") ? " (" + val("f_edad") + " " + t("wa_years") + ")" : "";
+      return t("wa_intro") + "\n\n"
+        + t("wa_student") + ": " + val("f_est") + edad + "\n"
+        + t("wa_parent") + ": " + val("f_padre") + "\n"
+        + t("wa_phone") + ": " + val("f_tel") + "\n"
+        + (val("f_correo") ? t("wa_email") + ": " + val("f_correo") + "\n" : "")
+        + (val("f_dir") ? t("wa_address") + ": " + val("f_dir") + "\n" : "")
+        + t("wa_allergies") + ": " + (val("f_med") || t("wa_none")) + "\n"
+        + t("wa_image") + ": " + imagenTxt() + "\n"
+        + t("wa_date") + ": " + hoyTxt + "\n\n"
+        + t("wa_accept") + "\n"
+        + t("wa_receipt");
+    }
+
+    function filaInscripcion() {
+      return {
+        est: val("f_est"),
+        edad: val("f_edad") || null,
+        padre: val("f_padre"),
+        tel: val("f_tel"),
+        correo: val("f_correo") || null,
+        dir: val("f_dir") || null,
+        med: val("f_med") || null,
+        img: imagenVal(),
+        acepto: true,
+        fecha: hoyTxt
+      };
+    }
+
+    function mostrarConfirma(guardado) {
+      ultimoGuardado = guardado;
+      document.getElementById("signame").textContent = val("f_padre");
+      document.getElementById("resumen").textContent = construirResumen();
+      document.getElementById("confirma-msg").innerHTML = guardado ? t("conf_saved") : t("conf_unsaved");
+      try {
+        localStorage.setItem("sw_firmado", JSON.stringify({ padre: val("f_padre"), estudiante: val("f_est"), fecha: hoyTxt }));
+      } catch (e) {}
+      document.getElementById("firma-sec").hidden = true;
+      var c = document.getElementById("confirma");
+      c.hidden = false;
+      c.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+
+    var enviando = false;
+    btn.addEventListener("click", function () {
+      if (enviando) return;
+      var f = faltantes();
+      if (f.length > 0) {
+        pintarAviso(f);
+        var primero = document.getElementById(f[0][0]);
+        if (primero && primero.scrollIntoView) primero.scrollIntoView({ behavior: "smooth", block: "center" });
+        if (primero && primero.focus && f[0][0] !== "accept-box") primero.focus({ preventScroll: true });
+        return;
+      }
+      errBox.hidden = true;
+
+      var hp = document.getElementById("hp_web");
+      if (hp && hp.value.trim() !== "") { mostrarConfirma(true); return; }
+
+      enviando = true;
+      btn.disabled = true;
+      var textoOrig = btn.textContent;
+      btn.textContent = t("signing");
+
+      function terminar(guardado) {
+        enviando = false;
+        btn.disabled = false;
+        btn.textContent = textoOrig;
+        mostrarConfirma(guardado);
+      }
+
+      if (!sb) { terminar(false); return; }
+
+      sb.from("inscripciones").insert(filaInscripcion()).then(function (res) {
+        terminar(!(res && res.error));
+        if (res && res.error && window.console) console.warn("No se guardo la inscripcion:", res.error);
+      }).catch(function (e) {
+        if (window.console) console.warn("Error al guardar la inscripcion:", e);
+        terminar(false);
+      });
+    });
+
+    function copiar(texto, boton) {
+      var original = boton.textContent;
+      function feedback() { boton.textContent = t("copied"); setTimeout(function () { boton.textContent = original; }, 1600); }
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(texto).then(feedback).catch(function () { selFallback(texto, feedback); });
+      } else { selFallback(texto, feedback); }
+    }
+    function selFallback(texto, cb) {
+      var ta = document.createElement("textarea");
+      ta.value = texto; ta.style.position = "fixed"; ta.style.opacity = "0";
+      document.body.appendChild(ta); ta.focus(); ta.select();
+      try { document.execCommand("copy"); cb && cb(); } catch (e) {}
+      document.body.removeChild(ta);
+    }
+    document.querySelectorAll(".copybtn[data-copy]").forEach(function (b) {
+      b.addEventListener("click", function () { copiar(b.getAttribute("data-copy"), b); });
+    });
+    document.getElementById("copyres").addEventListener("click", function () {
+      copiar(document.getElementById("resumen").textContent, this);
+    });
+
+    // ---- Arranque ----
+    aplicarIdioma(lang);
+  })();
+</script>
+</body>
+</html>
